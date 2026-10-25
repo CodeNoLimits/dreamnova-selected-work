@@ -424,6 +424,66 @@
       border: 0;
       object-fit: cover;
     }
+    .v-cover {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      padding: 0;
+      background: #080604;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+    .v-cover img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s var(--ease), filter 0.4s;
+      filter: brightness(0.88);
+    }
+    .v-cover:hover img {
+      transform: scale(1.04);
+      filter: brightness(0.98);
+    }
+    .v-cover__play {
+      position: relative;
+      z-index: 2;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      border-radius: 999px;
+      background: rgba(10, 8, 5, 0.78);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(240, 217, 140, 0.55);
+      color: var(--gold-pale);
+      font: 700 13px/1 var(--f-body);
+      letter-spacing: 0.04em;
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.75);
+      transition: transform 0.35s var(--ease), background 0.3s;
+    }
+    .v-cover:hover .v-cover__play {
+      transform: scale(1.06);
+      background: linear-gradient(180deg, #f3dc93, #d4af37);
+      color: #140f04;
+    }
+    .v-cover__dot {
+      display: grid;
+      place-items: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #f3dc93, #d4af37);
+      color: #140f04;
+      font-size: 11px;
+    }
 
     /* Card Body */
     .vcard__body {
@@ -573,7 +633,8 @@
     }
     @media (max-width: 760px) {
       .nav__links { display: none; }
-      .nav { padding: 6px 8px 6px 12px; }
+      .nav__badge { display: none; }
+      .nav { padding: 6px 8px 6px 14px; }
       .hero__specs { grid-template-columns: repeat(2, 1fr); gap: 16px; }
       .long-grid { grid-template-columns: 1fr; }
       .short-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
@@ -676,6 +737,10 @@
           <div class="shell">
             <div class="core">
               <div class="player-16x9">
+                <button type="button" class="v-cover" onclick="this.remove()" aria-label="Play Brian Brinig Deposition Traps Long-Form Edit">
+                  <img src="assets/thumb_deposition-traps.jpg" alt="Deposition Traps Every Expert Witness Must Know">
+                  <span class="v-cover__play"><span class="v-cover__dot">▶</span>Play Long-Form (09:20)</span>
+                </button>
                 <iframe src="https://drive.google.com/file/d/1H5q7hg7GIFa6bMQ-lVZ7xUhX7SRYy1hR/preview" allow="autoplay; fullscreen" loading="eager" title="Brian Brinig — Deposition Traps Long-Form Edit"></iframe>
               </div>
             </div>
@@ -717,6 +782,10 @@
           <article class="shell">
             <div class="core">
               <div class="player-16x9">
+                <button type="button" class="v-cover" onclick="this.remove()" aria-label="Play Brian Brinig Privilege Long-Form Edit">
+                  <img src="assets/thumb_privilege.jpg" alt="Consulting vs Designated Expert Witness" loading="lazy">
+                  <span class="v-cover__play"><span class="v-cover__dot">▶</span>Play Episode (08:31)</span>
+                </button>
                 <iframe src="https://drive.google.com/file/d/1umDc5w032JR_hzhAyjwQmsfclusHk8qg/preview" allow="autoplay; fullscreen" loading="lazy" title="Brian Brinig — Consulting vs Designated Expert Witness"></iframe>
               </div>
               <div class="vcard__body">
@@ -740,6 +809,10 @@
           <article class="shell">
             <div class="core">
               <div class="player-16x9">
+                <button type="button" class="v-cover" onclick="this.remove()" aria-label="Play Brian Brinig Daubert Long-Form Edit">
+                  <img src="assets/thumb_daubert.jpg" alt="Only About 40% of Challenges Succeed" loading="lazy">
+                  <span class="v-cover__play"><span class="v-cover__dot">▶</span>Play Episode (10:53)</span>
+                </button>
                 <iframe src="https://drive.google.com/file/d/1-N8TiGOBsNbNj_bHkbJ7yzqCYLeow71p/preview" allow="autoplay; fullscreen" loading="lazy" title="Brian Brinig — Daubert Challenges Long-Form Edit"></iframe>
               </div>
               <div class="vcard__body">
@@ -826,6 +899,10 @@
           <article class="shell">
             <div class="core">
               <div class="player-16x9">
+                <button type="button" class="v-cover" onclick="this.remove()" aria-label="Play Saba 1-Hour Documentary Feature">
+                  <img src="assets/saba_poster.jpg" alt="Saba — 1-Hour Biographical Documentary Feature" loading="lazy">
+                  <span class="v-cover__play"><span class="v-cover__dot">▶</span>Play 1-Hour Film (60:00)</span>
+                </button>
                 <iframe src="https://drive.google.com/file/d/142IYnzexEQEsrYt-iPQtPIwG6ZQKe2fa/preview" allow="autoplay; fullscreen" loading="lazy" title="Saba — 60-Minute Documentary Feature (v5.9)"></iframe>
               </div>
               <div class="vcard__body">
@@ -849,6 +926,10 @@
           <article class="shell">
             <div class="core">
               <div class="player-16x9">
+                <button type="button" class="v-cover" onclick="this.remove()" aria-label="Play Moshe's Rock Memorial Documentary Film">
+                  <img src="assets/maryline_v76.jpg" alt="Moshe's Rock — Memorial Documentary Film" loading="lazy">
+                  <span class="v-cover__play"><span class="v-cover__dot">▶</span>Play Documentary (07:08)</span>
+                </button>
                 <iframe src="https://drive.google.com/file/d/16KXiUSoE1aHI_hcx4zr3UJHwNPgv_8a9/preview" allow="autoplay; fullscreen" loading="lazy" title="Moshe's Rock — Memorial Documentary Film (V7.6)"></iframe>
               </div>
               <div class="vcard__body">
@@ -872,6 +953,10 @@
           <article class="shell">
             <div class="core">
               <div class="player-16x9">
+                <button type="button" class="v-cover" onclick="this.remove()" aria-label="Play Brian Brinig Six Steps Long-Form Edit">
+                  <img src="assets/thumb_six-steps.jpg" alt="Six Steps to Becoming a Great Expert Witness" loading="lazy">
+                  <span class="v-cover__play"><span class="v-cover__dot">▶</span>Play Episode (09:22)</span>
+                </button>
                 <iframe src="https://drive.google.com/file/d/1B95AwUWRA9Snz8QDAwRjBEqJRh95qt-j/preview" allow="autoplay; fullscreen" loading="lazy" title="Brian Brinig — Six Steps to Becoming a Great Expert Witness"></iframe>
               </div>
               <div class="vcard__body">
@@ -935,6 +1020,10 @@
           <article class="shell">
             <div class="core">
               <div class="player-9x16">
+                <button type="button" class="v-cover" onclick="this.remove()" aria-label="Play Short — Talks with the lawyer aren't privileged">
+                  <img src="assets/short_contrast_13.jpg" alt="Talks With the Lawyer Aren't Privileged" loading="lazy">
+                  <span class="v-cover__play"><span class="v-cover__dot">▶</span>Play Short (39s)</span>
+                </button>
                 <iframe src="https://drive.google.com/file/d/1RYxCOWAHpOVuTb6N_2GL6fFdpvzJltNs/preview" allow="autoplay; fullscreen" loading="lazy" title="Brian Brinig Short — Talks with the lawyer aren't privileged"></iframe>
               </div>
               <div class="vcard__body">
@@ -958,6 +1047,10 @@
           <article class="shell">
             <div class="core">
               <div class="player-9x16">
+                <button type="button" class="v-cover" onclick="this.remove()" aria-label="Play Short — Don't comment on the opposing expert">
+                  <img src="assets/short_contrast_15.jpg" alt="Don't Comment on the Opposing Expert" loading="lazy">
+                  <span class="v-cover__play"><span class="v-cover__dot">▶</span>Play Short (35s)</span>
+                </button>
                 <iframe src="https://drive.google.com/file/d/1B9h84gFrvssvKWeQY9grqYvPJQ7YcKga/preview" allow="autoplay; fullscreen" loading="lazy" title="Brian Brinig Short — Don't comment on the opposing expert"></iframe>
               </div>
               <div class="vcard__body">
@@ -981,6 +1074,10 @@
           <article class="shell">
             <div class="core">
               <div class="player-9x16">
+                <button type="button" class="v-cover" onclick="this.remove()" aria-label="Play Short — An expert's goal: lose the least">
+                  <img src="assets/short_th_01.jpg" alt="An Expert's Goal: Lose the Least" loading="lazy">
+                  <span class="v-cover__play"><span class="v-cover__dot">▶</span>Play Short (43s)</span>
+                </button>
                 <iframe src="https://drive.google.com/file/d/18WFB28Os8WbBwz0Ko2-J4N1cKc7TBWWO/preview" allow="autoplay; fullscreen" loading="lazy" title="Brian Brinig Short — An expert's goal: lose the least"></iframe>
               </div>
               <div class="vcard__body">
@@ -1004,6 +1101,10 @@
           <article class="shell">
             <div class="core">
               <div class="player-9x16">
+                <button type="button" class="v-cover" onclick="this.remove()" aria-label="Play Short — Why winning a deposition means losing">
+                  <img src="assets/short_th_02.jpg" alt="Why Winning a Deposition Means Losing" loading="lazy">
+                  <span class="v-cover__play"><span class="v-cover__dot">▶</span>Play Short (38s)</span>
+                </button>
                 <iframe src="https://drive.google.com/file/d/1d0Dw4zBznuGuNVApdOQVS6MCImopJX0o/preview" allow="autoplay; fullscreen" loading="lazy" title="Brian Brinig Short — Why winning a deposition means losing"></iframe>
               </div>
               <div class="vcard__body">
