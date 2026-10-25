@@ -294,6 +294,7 @@
     section.block {
       padding: clamp(64px, 9vw, 120px) var(--pad);
       border-bottom: 1px solid var(--line2);
+      scroll-margin-top: 84px;
     }
     .sec-head {
       display: flex;
@@ -581,7 +582,8 @@
       .vcard__title { font-size: 16.5px; }
       .vcard__ctx { font-size: 13px; }
     }
-    @media (max-width: 480px) {
+    @media (max-width: 520px) {
+      .nav__badge { display: none; }
       .short-grid { grid-template-columns: 1fr; }
       .hero__actions .btn { width: 100%; justify-content: space-between; }
       .cta-buttons .btn { width: 100%; justify-content: space-between; }
