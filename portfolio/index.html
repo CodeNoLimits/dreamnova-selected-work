@@ -1,0 +1,1475 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Selected Work — DreamNova Studio</title>
+  <meta name="description" content="Real client work by DreamNova Studio, Jerusalem: long-form YouTube edits, a 60-minute documentary, a memorial film, vertical reels and live websites.">
+  <meta name="theme-color" content="#050403">
+  <meta name="robots" content="noindex, nofollow">
+  <meta property="og:title" content="Selected Work — DreamNova Studio">
+  <meta property="og:description" content="Long-form edits, a 60-minute documentary, reels and live websites — real client work, playable on the page.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="../assets/crest.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #050403;
+      --bg2: #0b0907;
+      --bg3: #120f0b;
+      --ink: #f4efe6;
+      --mute: #b5ada0;
+      --dim: #8a8276;
+      --gold: #d4af37;
+      --gold-lt: #f0d98c;
+      --gold-pale: #f7e9b8;
+      --amber: #e0a23d;
+      --bronze: #8a6a2a;
+      --line: rgba(240, 217, 140, 0.15);
+      --line2: rgba(255, 255, 255, 0.08);
+      --ease: cubic-bezier(0.32, 0.72, 0, 1);
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --f-display: "Bricolage Grotesque", system-ui, -apple-system, sans-serif;
+      --f-accent: "Instrument Serif", Georgia, serif;
+      --f-body: "Manrope", system-ui, -apple-system, sans-serif;
+      --f-mono: "JetBrains Mono", monospace;
+      --pad: clamp(18px, 4.5vw, 68px);
+      --r: 24px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html {
+      background: var(--bg);
+      color: var(--ink);
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    body {
+      font-family: var(--f-body);
+      font-size: 16px;
+      line-height: 1.6;
+      background: var(--bg);
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    img, video, iframe { display: block; max-width: 100%; }
+    em { font-family: var(--f-accent); font-style: italic; font-weight: 400; }
+    ::selection { background: var(--gold); color: #000; }
+    :focus-visible { outline: 2px solid var(--gold-lt); outline-offset: 3px; border-radius: 8px; }
+
+    /* Subtle Film Grain */
+    .grain {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      pointer-events: none;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* Navigation Pill */
+    .nav {
+      position: fixed;
+      z-index: 80;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 7px 8px 7px 16px;
+      border-radius: 999px;
+      background: rgba(14, 11, 8, 0.72);
+      backdrop-filter: blur(22px) saturate(1.3);
+      -webkit-backdrop-filter: blur(22px) saturate(1.3);
+      box-shadow: inset 0 0 0 1px rgba(240, 217, 140, 0.16), 0 20px 50px -20px rgba(0, 0, 0, 0.85);
+      width: min(1160px, calc(100vw - 24px));
+    }
+    .nav__brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .nav__crest {
+      width: 24px;
+      height: 30px;
+    }
+    .nav__name {
+      font: 700 15px/1 var(--f-display);
+      letter-spacing: -0.01em;
+    }
+    .nav__badge {
+      font: 500 11px/1 var(--f-mono);
+      color: var(--gold-lt);
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(212, 175, 55, 0.1);
+      border: 1px solid rgba(240, 217, 140, 0.22);
+      letter-spacing: 0.04em;
+    }
+    .nav__links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .nav__links a {
+      padding: 8px 13px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--mute);
+      transition: color 0.25s, background 0.25s;
+      white-space: nowrap;
+    }
+    .nav__links a:hover {
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    /* Buttons */
+    .btn {
+      --h: 48px;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      height: var(--h);
+      padding-inline: 22px 6px;
+      border-radius: 999px;
+      font: 600 14.5px/1 var(--f-body);
+      letter-spacing: 0.01em;
+      transition: transform 0.45s var(--ease), box-shadow 0.45s var(--ease), background 0.3s;
+      white-space: nowrap;
+      cursor: pointer;
+      border: 0;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn__ico {
+      display: grid;
+      place-items: center;
+      width: calc(var(--h) - 12px);
+      height: calc(var(--h) - 12px);
+      border-radius: 50%;
+      font-size: 14px;
+      transition: transform 0.45s var(--ease);
+    }
+    .btn:hover .btn__ico {
+      transform: translate(2px, -2px) scale(1.05);
+    }
+    .btn--gold {
+      background: linear-gradient(180deg, #f3dc93, #d4af37 60%, #b8912a);
+      color: #140f04;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 10px 36px -10px rgba(212, 175, 55, 0.55);
+    }
+    .btn--gold .btn__ico { background: rgba(20, 15, 4, 0.14); }
+    .btn--gold:hover {
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 16px 48px -10px rgba(212, 175, 55, 0.78);
+    }
+    .btn--glass {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--ink);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(14px);
+    }
+    .btn--glass .btn__ico { background: rgba(255, 255, 255, 0.09); }
+    .btn--glass:hover { background: rgba(255, 255, 255, 0.11); }
+    .btn--sm {
+      --h: 38px;
+      padding-inline: 16px 5px;
+      font-size: 13px;
+      gap: 8px;
+    }
+
+    /* Eyebrow & Typography */
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      font: 600 11px/1 var(--f-mono);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--gold-lt);
+      box-shadow: inset 0 0 0 1px rgba(240, 217, 140, 0.3);
+      background: rgba(212, 175, 55, 0.07);
+    }
+    .pulse {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--gold-lt);
+      box-shadow: 0 0 0 0 rgba(240, 217, 140, 0.6);
+      animation: pulse 2.2s infinite;
+    }
+    @keyframes pulse {
+      70% { box-shadow: 0 0 0 9px rgba(240, 217, 140, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(240, 217, 140, 0); }
+    }
+
+    /* Hero */
+    .hero {
+      position: relative;
+      padding: clamp(118px, 15vw, 170px) var(--pad) clamp(56px, 8vw, 96px);
+      overflow: hidden;
+      isolation: isolate;
+      border-bottom: 1px solid var(--line2);
+    }
+    .hero__bg {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background:
+        radial-gradient(55% 50% at 75% 22%, rgba(212, 175, 55, 0.24), transparent 70%),
+        radial-gradient(45% 45% at 18% 75%, rgba(224, 162, 61, 0.12), transparent 70%),
+        linear-gradient(180deg, #080604 0%, var(--bg) 100%);
+    }
+    .container {
+      max-width: 1360px;
+      margin-inline: auto;
+      width: 100%;
+    }
+    .hero__title {
+      margin-top: 22px;
+      font: 700 clamp(38px, 6.8vw, 96px)/0.94 var(--f-display);
+      letter-spacing: -0.035em;
+      max-width: 15ch;
+    }
+    .hero__title em {
+      font-size: 1.06em;
+      letter-spacing: -0.02em;
+      background: linear-gradient(100deg, var(--gold-pale) 0%, var(--gold) 42%, var(--amber) 68%, var(--gold-pale) 100%);
+      background-size: 200% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      padding-inline-end: 0.06em;
+    }
+    .hero__sub {
+      margin-top: 22px;
+      max-width: 64ch;
+      font-size: clamp(16px, 1.35vw, 19.5px);
+      color: #d5cdbf;
+      line-height: 1.65;
+    }
+    .hero__sub strong {
+      color: var(--gold-pale);
+      font-weight: 600;
+    }
+    .hero__actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 32px;
+    }
+    .hero__specs {
+      margin-top: 48px;
+      padding-top: 26px;
+      border-top: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+    .spec-item b {
+      display: block;
+      font: 700 clamp(22px, 2.4vw, 34px)/1.05 var(--f-display);
+      color: var(--gold-pale);
+      letter-spacing: -0.02em;
+    }
+    .spec-item span {
+      display: block;
+      margin-top: 6px;
+      font-size: 13px;
+      color: var(--mute);
+    }
+
+    /* Sections */
+    section.block {
+      padding: clamp(64px, 9vw, 120px) var(--pad);
+      border-bottom: 1px solid var(--line2);
+      scroll-margin-top: 84px;
+    }
+    .sec-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: clamp(32px, 4.5vw, 56px);
+    }
+    .h2 {
+      font: 700 clamp(28px, 4.4vw, 60px)/1.0 var(--f-display);
+      letter-spacing: -0.03em;
+      margin-top: 14px;
+    }
+    .sec-lead {
+      max-width: 48ch;
+      font-size: 15.5px;
+      color: var(--mute);
+    }
+
+    /* Double-Bezel Ferrari Card */
+    .shell {
+      padding: 5px;
+      border-radius: var(--r);
+      background: linear-gradient(160deg, rgba(240, 217, 140, 0.18), rgba(255, 255, 255, 0.03) 42%, rgba(240, 217, 140, 0.09));
+      box-shadow: 0 28px 80px -32px rgba(0, 0, 0, 0.92);
+      transition: transform 0.45s var(--ease), background 0.45s var(--ease);
+    }
+    .shell:hover {
+      transform: translateY(-3px);
+    }
+    .core {
+      height: 100%;
+      border-radius: calc(var(--r) - 5px);
+      background: linear-gradient(180deg, #120f0b, #090705);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Highlighted Lead Long-Form Banner */
+    .featured-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: 24px;
+      margin-bottom: 28px;
+      align-items: stretch;
+    }
+    .featured-info {
+      padding: clamp(22px, 3vw, 36px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .featured-info h3 {
+      font: 700 clamp(22px, 2.3vw, 32px)/1.12 var(--f-display);
+      letter-spacing: -0.02em;
+      margin-top: 10px;
+    }
+    .featured-info p {
+      color: #d2cabd;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+    .deliverables-list {
+      list-style: none;
+      display: grid;
+      gap: 9px;
+      margin-top: 6px;
+    }
+    .deliverables-list li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13.5px;
+      color: var(--mute);
+    }
+    .deliverables-list li::before {
+      content: "✦";
+      color: var(--gold);
+      font-size: 11px;
+    }
+
+    /* Video Grids */
+    .long-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+    .short-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    /* Aspect Ratio Players */
+    .player-16x9 {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+      border-bottom: 1px solid var(--line2);
+    }
+    .player-16x9 iframe,
+    .player-16x9 video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    .player-9x16 {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 9 / 16;
+      background: #000;
+      border-bottom: 1px solid var(--line2);
+    }
+    .player-9x16 iframe,
+    .player-9x16 video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      object-fit: cover;
+    }
+    .v-cover {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      padding: 0;
+      background: #080604;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+    .v-cover img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s var(--ease), filter 0.4s;
+      filter: brightness(0.88);
+    }
+    .v-cover:hover img {
+      transform: scale(1.04);
+      filter: brightness(0.98);
+    }
+    .v-cover__play {
+      position: relative;
+      z-index: 2;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      border-radius: 999px;
+      background: rgba(10, 8, 5, 0.78);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(240, 217, 140, 0.55);
+      color: var(--gold-pale);
+      font: 700 13px/1 var(--f-body);
+      letter-spacing: 0.04em;
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.75);
+      transition: transform 0.35s var(--ease), background 0.3s;
+    }
+    .v-cover:hover .v-cover__play {
+      transform: scale(1.06);
+      background: linear-gradient(180deg, #f3dc93, #d4af37);
+      color: #140f04;
+    }
+    .v-cover__dot {
+      display: grid;
+      place-items: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #f3dc93, #d4af37);
+      color: #140f04;
+      font-size: 11px;
+    }
+
+    /* Card Body */
+    .vcard__body {
+      padding: 20px 22px 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex: 1;
+      gap: 14px;
+    }
+    .vcard__top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font: 600 10.5px/1 var(--f-mono);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold-lt);
+      background: rgba(212, 175, 55, 0.1);
+      border: 1px solid rgba(240, 217, 140, 0.24);
+    }
+    .tag--lang {
+      color: var(--mute);
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+    .vcard__title {
+      margin-top: 10px;
+      font: 600 19px/1.22 var(--f-display);
+      letter-spacing: -0.015em;
+      color: var(--ink);
+    }
+    .vcard__ctx {
+      margin-top: 7px;
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--mute);
+    }
+    .vcard__foot {
+      padding-top: 12px;
+      border-top: 1px solid var(--line2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 12.5px;
+      color: var(--dim);
+    }
+    .ext-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 600;
+      color: var(--gold-lt);
+      transition: opacity 0.2s;
+    }
+    .ext-link:hover { opacity: 0.8; text-decoration: underline; }
+
+    /* Process Grid */
+    .process-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+    }
+    .step-card {
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .step-num {
+      font: 600 12px/1 var(--f-mono);
+      color: var(--gold);
+      letter-spacing: 0.14em;
+    }
+    .step-title {
+      font: 700 18px/1.2 var(--f-display);
+      color: var(--ink);
+    }
+    .step-desc {
+      font-size: 13.5px;
+      color: var(--mute);
+      line-height: 1.55;
+    }
+
+    /* Call to Action */
+    .cta-box {
+      padding: clamp(32px, 5vw, 64px);
+      text-align: center;
+      align-items: center;
+      background:
+        radial-gradient(60% 80% at 50% 0%, rgba(212, 175, 55, 0.16), transparent 70%),
+        linear-gradient(180deg, #13100b, #090705);
+    }
+    .cta-box h2 {
+      font: 700 clamp(28px, 4.5vw, 56px)/1.02 var(--f-display);
+      letter-spacing: -0.03em;
+      max-width: 20ch;
+      margin-inline: auto;
+      margin-top: 16px;
+    }
+    .cta-box p {
+      max-width: 54ch;
+      margin: 16px auto 0;
+      color: var(--mute);
+      font-size: 16px;
+    }
+    .cta-buttons {
+      margin-top: 28px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    /* Footer */
+    .foot {
+      padding: 36px var(--pad) 48px;
+      font-size: 13px;
+      color: var(--dim);
+    }
+    .foot__row {
+      max-width: 1360px;
+      margin-inline: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    /* Responsive Breakpoints */
+    @media (max-width: 1120px) {
+      .featured-grid { grid-template-columns: 1fr; }
+      .short-grid { grid-template-columns: repeat(2, 1fr); }
+      .process-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 760px) {
+      .nav__links { display: none; }
+      .nav__badge { display: none; }
+      .nav { padding: 6px 8px 6px 14px; }
+      .hero__specs { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+      .long-grid { grid-template-columns: 1fr; }
+      .short-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .process-grid { grid-template-columns: 1fr; }
+      .vcard__body { padding: 16px; }
+      .vcard__title { font-size: 16.5px; }
+      .vcard__ctx { font-size: 13px; }
+    }
+    @media (max-width: 520px) {
+      .nav__badge { display: none; }
+      .short-grid { grid-template-columns: 1fr; }
+      .hero__actions .btn { width: 100%; justify-content: space-between; }
+      .cta-buttons .btn { width: 100%; justify-content: space-between; }
+    }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- Top Navigation -->
+  <header class="nav">
+    <a href="#top" class="nav__brand">
+      <img class="nav__crest" src="../assets/crest.svg" alt="DreamNova" width="24" height="30">
+      <span class="nav__name">DreamNova</span>
+      <span class="nav__badge">SELECTED WORK</span>
+    </a>
+    <nav class="nav__links" aria-label="Sections">
+      <a href="#long-form">Long-Form Edits</a>
+      <a href="#documentaries">1-Hour &amp; Docu Films</a>
+      <a href="#shorts">Shorts &amp; Reels</a>
+      <a href="#sites">Websites</a>
+      <a href="#process">Workflow</a>
+    </nav>
+    <a class="btn btn--gold btn--sm" href="https://wa.me/972584921492?text=Hi%20David%2C%20I%20saw%20the%20DreamNova%20selected%20work%20page" target="_blank" rel="noopener">
+      <span>WhatsApp</span>
+      <span class="btn__ico">↗</span>
+    </a>
+  </header>
+
+  <main id="top">
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero__bg" aria-hidden="true"></div>
+      <div class="container">
+        <p class="eyebrow"><span class="pulse"></span>DreamNova Studio · Jerusalem · English, French &amp; Hebrew</p>
+        <h1 class="hero__title">Real clients. <em>Real work.</em></h1>
+        <p class="hero__sub">
+          Everything below was made for real clients and is playable right here: <strong>long-form YouTube episodes</strong>, a <strong>60-minute documentary feature</strong>, a <strong>memorial film</strong>, <strong>vertical reels</strong> in three languages, and <strong>live websites &amp; AI agents</strong> you can open and test.
+        </p>
+        <div class="hero__actions">
+          <a class="btn btn--gold" href="#long-form">
+            <span>Watch Long-Form Edits First</span>
+            <span class="btn__ico">↓</span>
+          </a>
+          <a class="btn btn--glass" href="#sites">
+            <span>See Live Websites &amp; AI</span>
+            <span class="btn__ico">↓</span>
+          </a>
+          <a class="btn btn--glass" href="https://dreamnova-next.vercel.app/en/" target="_blank" rel="noopener">
+            <span>DreamNova Main Site</span>
+            <span class="btn__ico">↗</span>
+          </a>
+        </div>
+
+        <div class="hero__specs">
+          <div class="spec-item">
+            <b>72 Hours</b>
+            <span>Turnaround on first long-form cut</span>
+          </div>
+          <div class="spec-item">
+            <b>10 to 60 Min</b>
+            <span>YouTube episodes &amp; full documentary features</span>
+          </div>
+          <div class="spec-item">
+            <b>−14 LUFS</b>
+            <span>Broadcast audio cleanup &amp; dialogue leveling</span>
+          </div>
+          <div class="spec-item">
+            <b>Full Pack</b>
+            <span>Master MP4, clean MP4, SRT captions &amp; thumbnail</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 1: LONG-FORM YOUTUBE EDITS (ENGLISH + CREATOR CHANNELS) -->
+    <section class="block" id="long-form">
+      <div class="container">
+        <div class="sec-head">
+          <div>
+            <p class="eyebrow">01 · Long-Form YouTube Edits (16:9)</p>
+            <h2 class="h2">Long-Form <em>YouTube Episodes.</em></h2>
+          </div>
+          <p class="sec-lead">
+            Built for session watch-time: cold-open hook from the peak moment, dead-air cut in natural silence, chapter pacing, dynamic captions, and −14 LUFS audio cleanup.
+          </p>
+        </div>
+
+        <!-- Featured Lead Long-Form Edit -->
+        <div class="featured-grid">
+          <div class="shell">
+            <div class="core">
+              <div class="player-16x9">
+                <button type="button" class="v-cover" onclick="this.remove()" aria-label="Play Brian Brinig Deposition Traps Long-Form Edit">
+                  <img src="../assets/thumb_deposition-traps.jpg" alt="Deposition Traps Every Expert Witness Must Know">
+                  <span class="v-cover__play"><span class="v-cover__dot">▶</span>Play Long-Form (09:20)</span>
+                </button>
+                <iframe src="https://drive.google.com/file/d/1H5q7hg7GIFa6bMQ-lVZ7xUhX7SRYy1hR/preview" allow="autoplay; fullscreen" loading="eager" title="Brian Brinig — Deposition Traps Long-Form Edit"></iframe>
+              </div>
+            </div>
+          </div>
+          <div class="shell">
+            <div class="core featured-info">
+              <div>
+                <div class="vcard__top">
+                  <span class="tag">Featured Long-Form · 09:20 · 1080p</span>
+                  <span class="tag tag--lang">English (US)</span>
+                </div>
+                <h3>Brian Brinig — “Deposition Traps Every Expert Witness Must Know”</h3>
+                <p style="margin-top:12px;">
+                  <strong>1-line context:</strong> Full 9m20s YouTube episode cut from raw unscripted footage—cold-open hook, 22 silence-calibrated pacing cuts, chapter title cards, burned-in captions, and −14.0 LUFS audio mastering.
+                </p>
+                <ul class="deliverables-list" style="margin-top:16px;">
+                  <li>Cold-open teaser hook + structured chapter cards</li>
+                  <li>Every cut placed in natural room silence (zero clipped words)</li>
+                  <li>Delivered with clean YouTube MP4, captioned MP4, .SRT &amp; custom thumbnail</li>
+                </ul>
+              </div>
+              <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <a class="btn btn--gold btn--sm" href="https://drive.google.com/file/d/1H5q7hg7GIFa6bMQ-lVZ7xUhX7SRYy1hR/view" target="_blank" rel="noopener">
+                  <span>Open Full HD in Drive</span>
+                  <span class="btn__ico">↗</span>
+                </a>
+                <a class="btn btn--glass btn--sm" href="https://drive.google.com/file/d/1ZTvgCxWMxM6AzUmc_xScV4omchuO68Mh/view" target="_blank" rel="noopener">
+                  <span>Clean YouTube Master (No Burned Subs)</span>
+                  <span class="btn__ico">↗</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grid of Additional Long-Form YouTube Edits -->
+        <div class="long-grid">
+          <!-- Long-Form 2: Brian Brinig Privilege -->
+          <article class="shell">
+            <div class="core">
+              <div class="player-16x9">
+                <button type="button" class="v-cover" onclick="this.remove()" aria-label="Play Brian Brinig Privilege Long-Form Edit">
+                  <img src="../assets/thumb_privilege.jpg" alt="Consulting vs Designated Expert Witness">
+                  <span class="v-cover__play"><span class="v-cover__dot">▶</span>Play Episode (08:31)</span>
+                </button>
+                <iframe src="https://drive.google.com/file/d/1umDc5w032JR_hzhAyjwQmsfclusHk8qg/preview" allow="autoplay; fullscreen" loading="lazy" title="Brian Brinig — Consulting vs Designated Expert Witness"></iframe>
+              </div>
+              <div class="vcard__body">
+                <div>
+                  <div class="vcard__top">
+                    <span class="tag">Long-Form YouTube · 08:31 · 1080p</span>
+                    <span class="tag tag--lang">English (US)</span>
+                  </div>
+                  <h3 class="vcard__title">Brian Brinig — Consulting vs. Designated Expert Witness: What Is Privileged?</h3>
+                  <p class="vcard__ctx">Long-form talking-head YouTube episode restructured from raw footage with chapter cards, lower-thirds, dynamic subtitles, and −14.1 LUFS audio cleanup.</p>
+                </div>
+                <div class="vcard__foot">
+                  <span>Client: Brian Brinig (@brianbrinig)</span>
+                  <a class="ext-link" href="https://drive.google.com/file/d/1umDc5w032JR_hzhAyjwQmsfclusHk8qg/view" target="_blank" rel="noopener">Open in Drive ↗</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Long-Form 3: Brian Brinig Daubert -->
+          <article class="shell">
+            <div class="core">
+              <div class="player-16x9">
+                <button type="button" class="v-cover" onclick="this.remove()" aria-label="Play Brian Brinig Daubert Long-Form Edit">
+                  <img src="../assets/thumb_daubert.jpg" alt="Only About 40% of Challenges Succeed">
+                  <span class="v-cover__play"><span class="v-cover__dot">▶</span>Play Episode (10:53)</span>
+                </button>
+                <iframe src="https://drive.google.com/file/d/1-N8TiGOBsNbNj_bHkbJ7yzqCYLeow71p/preview" allow="autoplay; fullscreen" loading="lazy" title="Brian Brinig — Daubert Challenges Long-Form Edit"></iframe>
+              </div>
+              <div class="vcard__body">
+                <div>
+                  <div class="vcard__top">
+                    <span class="tag">Long-Form YouTube · 10:53</span>
+                    <span class="tag tag--lang">English (US)</span>
+                  </div>
+                  <h3 class="vcard__title">Brian Brinig — Only About 40% of Challenges Succeed (Daubert Deep-Dive)</h3>
+                  <p class="vcard__ctx">11-minute YouTube episode with cold-open hook, slide replacements, chapter transitions, and full caption synchronization.</p>
+                </div>
+                <div class="vcard__foot">
+                  <span>Client: Brian Brinig (@brianbrinig)</span>
+                  <a class="ext-link" href="https://drive.google.com/file/d/1-N8TiGOBsNbNj_bHkbJ7yzqCYLeow71p/view" target="_blank" rel="noopener">Open in Drive ↗</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Long-Form 4: Leeya Kats YouTube Episode 1 -->
+          <article class="shell">
+            <div class="core">
+              <div class="player-16x9">
+                <iframe src="https://www.youtube.com/embed/d5gKPiLGduQ?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" title="Leeya Kats YouTube Long-Form #1"></iframe>
+              </div>
+              <div class="vcard__body">
+                <div>
+                  <div class="vcard__top">
+                    <span class="tag">Creator YouTube Episode · 16:9</span>
+                    <span class="tag tag--lang">YouTube (@Leeyakats)</span>
+                  </div>
+                  <h3 class="vcard__title">Leeya Kats — Why Instagram Doesn’t Work the Same in 2026: Building a Brand on YouTube</h3>
+                  <p class="vcard__ctx">Creator long-form YouTube episode—retention-focused jump cuts, B-roll &amp; visual callouts, and studio vocal presence.</p>
+                </div>
+                <div class="vcard__foot">
+                  <span>Channel: @Leeyakats</span>
+                  <a class="ext-link" href="https://youtu.be/d5gKPiLGduQ" target="_blank" rel="noopener">Watch on YouTube ↗</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Long-Form 5: Leeya Kats YouTube Episode 2 -->
+          <article class="shell">
+            <div class="core">
+              <div class="player-16x9">
+                <iframe src="https://www.youtube.com/embed/GXixvQUqZbM?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" title="Leeya Kats YouTube Long-Form #2"></iframe>
+              </div>
+              <div class="vcard__body">
+                <div>
+                  <div class="vcard__top">
+                    <span class="tag">Creator YouTube Episode · 16:9</span>
+                    <span class="tag tag--lang">YouTube (@Leeyakats)</span>
+                  </div>
+                  <h3 class="vcard__title">Leeya Kats — The Virality Illusion: Why Short-Form Alone Doesn’t Bring Premium Clients</h3>
+                  <p class="vcard__ctx">Long-form strategy episode on YouTube—structured chapter pacing, clean audio polish, and visual rhythm built for watch time.</p>
+                </div>
+                <div class="vcard__foot">
+                  <span>Channel: @Leeyakats</span>
+                  <a class="ext-link" href="https://youtu.be/GXixvQUqZbM" target="_blank" rel="noopener">Watch on YouTube ↗</a>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: 1-HOUR DOCUMENTARY FEATURE, MEMORIAL FILM & DAILY SERIES -->
+    <section class="block" id="documentaries">
+      <div class="container">
+        <div class="sec-head">
+          <div>
+            <p class="eyebrow">02 · 1-Hour Feature &amp; Documentary Productions (16:9)</p>
+            <h2 class="h2">60-Minute Feature &amp; <em>Narrative Films.</em></h2>
+          </div>
+          <p class="sec-lead">
+            Proof of our capacity to handle 1-hour timelines, multi-source archival audio, field recordings, color grading, and narrative pacing from start to finish.
+          </p>
+        </div>
+
+        <div class="long-grid">
+          <!-- Saba 60-Min Documentary Feature -->
+          <article class="shell">
+            <div class="core">
+              <div class="player-16x9">
+                <button type="button" class="v-cover" onclick="this.remove()" aria-label="Play Saba 1-Hour Documentary Feature">
+                  <img src="../assets/saba_poster.jpg" alt="Saba — 1-Hour Biographical Documentary Feature">
+                  <span class="v-cover__play"><span class="v-cover__dot">▶</span>Play 1-Hour Film (60:00)</span>
+                </button>
+                <iframe src="https://drive.google.com/file/d/142IYnzexEQEsrYt-iPQtPIwG6ZQKe2fa/preview" allow="autoplay; fullscreen" loading="lazy" title="Saba — 60-Minute Documentary Feature (v5.9)"></iframe>
+              </div>
+              <div class="vcard__body">
+                <div>
+                  <div class="vcard__top">
+                    <span class="tag">Full 1-Hour Feature · 60:00 · 1080p</span>
+                    <span class="tag tag--lang">Documentary Master</span>
+                  </div>
+                  <h3 class="vcard__title">Saba — 1-Hour Biographical Documentary Feature (v5.9 Festival Cut)</h3>
+                  <p class="vcard__ctx">Full 60-minute documentary assembling 240 shots across 6 chapters, archival photo restoration, custom soundtracks, and −16.4 LUFS theatrical audio mix.</p>
+                </div>
+                <div class="vcard__foot">
+                  <span>Duration: 60:00 exact (1920×1080)</span>
+                  <a class="ext-link" href="https://drive.google.com/file/d/142IYnzexEQEsrYt-iPQtPIwG6ZQKe2fa/view" target="_blank" rel="noopener">Open 1-Hour Film in Drive ↗</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Maryline Documentary Film (V7.6) -->
+          <article class="shell">
+            <div class="core">
+              <div class="player-16x9">
+                <button type="button" class="v-cover" onclick="this.remove()" aria-label="Play Moshe's Rock Memorial Documentary Film">
+                  <img src="../assets/maryline_v76.jpg" alt="Moshe's Rock — Memorial Documentary Film">
+                  <span class="v-cover__play"><span class="v-cover__dot">▶</span>Play Documentary (07:08)</span>
+                </button>
+                <iframe src="https://drive.google.com/file/d/16KXiUSoE1aHI_hcx4zr3UJHwNPgv_8a9/preview" allow="autoplay; fullscreen" loading="lazy" title="Moshe's Rock — Memorial Documentary Film (V7.6)"></iframe>
+              </div>
+              <div class="vcard__body">
+                <div>
+                  <div class="vcard__top">
+                    <span class="tag">Documentary Film · 07:08 · V7.6</span>
+                    <span class="tag tag--lang">French / Hebrew Subtitled</span>
+                  </div>
+                  <h3 class="vcard__title">Moshe’s Rock — Memorial Documentary &amp; Tribute Film (Delivered V7.6)</h3>
+                  <p class="vcard__ctx">Emotional documentary combining field radio recordings, TV broadcast archives, witness interviews, custom color grading, and musical transitions (−15.7 LUFS).</p>
+                </div>
+                <div class="vcard__foot">
+                  <span>Client: Maryline Bar-On (V7.6 Master)</span>
+                  <a class="ext-link" href="https://drive.google.com/file/d/16KXiUSoE1aHI_hcx4zr3UJHwNPgv_8a9/view" target="_blank" rel="noopener">Open Film in Drive ↗</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Brian Brinig Six Steps (9:22) -->
+          <article class="shell">
+            <div class="core">
+              <div class="player-16x9">
+                <button type="button" class="v-cover" onclick="this.remove()" aria-label="Play Brian Brinig Six Steps Long-Form Edit">
+                  <img src="../assets/thumb_six-steps.jpg" alt="Six Steps to Becoming a Great Expert Witness">
+                  <span class="v-cover__play"><span class="v-cover__dot">▶</span>Play Episode (09:22)</span>
+                </button>
+                <iframe src="https://drive.google.com/file/d/1B95AwUWRA9Snz8QDAwRjBEqJRh95qt-j/preview" allow="autoplay; fullscreen" loading="lazy" title="Brian Brinig — Six Steps to Becoming a Great Expert Witness"></iframe>
+              </div>
+              <div class="vcard__body">
+                <div>
+                  <div class="vcard__top">
+                    <span class="tag">Long-Form YouTube · 09:22</span>
+                    <span class="tag tag--lang">English (US)</span>
+                  </div>
+                  <h3 class="vcard__title">Brian Brinig — Six Steps to Becoming a Great Expert Witness (40 Years on the Stand)</h3>
+                  <p class="vcard__ctx">Structured 6-part long-form YouTube edit with chapter markers, silence-trimmed pacing, burned-in captions, and custom end screen.</p>
+                </div>
+                <div class="vcard__foot">
+                  <span>Client: Brian Brinig (@brianbrinig)</span>
+                  <a class="ext-link" href="https://drive.google.com/file/d/1B95AwUWRA9Snz8QDAwRjBEqJRh95qt-j/view" target="_blank" rel="noopener">Open in Drive ↗</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Hok Breslev Daily Long-Form YouTube Series -->
+          <article class="shell">
+            <div class="core">
+              <div class="player-16x9">
+                <iframe src="https://www.youtube.com/embed/Bre_Q6iFS7E?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" title="Hok Breslev Daily Multi-Language Long-Form Series"></iframe>
+              </div>
+              <div class="vcard__body">
+                <div>
+                  <div class="vcard__top">
+                    <span class="tag">Daily YouTube Series · 16:9</span>
+                    <span class="tag tag--lang">English / French / Hebrew</span>
+                  </div>
+                  <h3 class="vcard__title">Hok Breslev — Daily Multi-Language Long-Form YouTube Production</h3>
+                  <p class="vcard__ctx">Daily long-form episode production in English, French, and Hebrew with word-level synchronized text, custom thumbnails, and broadcast audio normalization.</p>
+                </div>
+                <div class="vcard__foot">
+                  <span>Also in <a class="ext-link" href="https://www.youtube.com/watch?v=K0uL15m9wM0" target="_blank" rel="noopener">FR ↗</a> &amp; <a class="ext-link" href="https://www.youtube.com/watch?v=5I6Mw0xvp6g" target="_blank" rel="noopener">HE ↗</a></span>
+                  <a class="ext-link" href="https://www.youtube.com/watch?v=Bre_Q6iFS7E" target="_blank" rel="noopener">Watch EN on YouTube ↗</a>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: SHORT-FORM CUTDOWNS & REELS (9:16) -->
+    <section class="block" id="shorts">
+      <div class="container">
+        <div class="sec-head">
+          <div>
+            <p class="eyebrow">03 · High-Retention Shorts &amp; Social Cutdowns (9:16)</p>
+            <h2 class="h2">Vertical Shorts &amp; <em>Brand Reels.</em></h2>
+          </div>
+          <p class="sec-lead">
+            Every long-form episode can be paired with scroll-stopping 9:16 cutdowns—featuring Brian’s English YouTube Shorts, Bistrot Romain Gary’s French evening spots and Hebrew reels for a Jerusalem landscaping company.
+          </p>
+        </div>
+
+        <div class="short-grid">
+          <!-- Short 1: Brian Contrast 13 -->
+          <article class="shell">
+            <div class="core">
+              <div class="player-9x16">
+                <button type="button" class="v-cover" onclick="this.remove()" aria-label="Play Short — Talks with the lawyer aren't privileged">
+                  <img src="../assets/short_contrast_13.jpg" alt="Talks With the Lawyer Aren't Privileged">
+                  <span class="v-cover__play"><span class="v-cover__dot">▶</span>Play Short (39s)</span>
+                </button>
+                <iframe src="https://drive.google.com/file/d/1RYxCOWAHpOVuTb6N_2GL6fFdpvzJltNs/preview" allow="autoplay; fullscreen" loading="lazy" title="Brian Brinig Short — Talks with the lawyer aren't privileged"></iframe>
+              </div>
+              <div class="vcard__body">
+                <div>
+                  <div class="vcard__top">
+                    <span class="tag">Contrast Short · 39s</span>
+                    <span class="tag tag--lang">English</span>
+                  </div>
+                  <h3 class="vcard__title">Talks With the Lawyer Aren’t Privileged</h3>
+                  <p class="vcard__ctx">Pattern-interrupt “Contrast” hook opener cutting at 0.6s into expert commentary with kinetic captions.</p>
+                </div>
+                <div class="vcard__foot">
+                  <span>1080×1920 · −14 LUFS</span>
+                  <a class="ext-link" href="https://drive.google.com/file/d/1RYxCOWAHpOVuTb6N_2GL6fFdpvzJltNs/view" target="_blank" rel="noopener">Open ↗</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Short 2: Brian Contrast 15 -->
+          <article class="shell">
+            <div class="core">
+              <div class="player-9x16">
+                <button type="button" class="v-cover" onclick="this.remove()" aria-label="Play Short — Don't comment on the opposing expert">
+                  <img src="../assets/short_contrast_15.jpg" alt="Don't Comment on the Opposing Expert">
+                  <span class="v-cover__play"><span class="v-cover__dot">▶</span>Play Short (35s)</span>
+                </button>
+                <iframe src="https://drive.google.com/file/d/1B9h84gFrvssvKWeQY9grqYvPJQ7YcKga/preview" allow="autoplay; fullscreen" loading="lazy" title="Brian Brinig Short — Don't comment on the opposing expert"></iframe>
+              </div>
+              <div class="vcard__body">
+                <div>
+                  <div class="vcard__top">
+                    <span class="tag">Contrast Short · 35s</span>
+                    <span class="tag tag--lang">English</span>
+                  </div>
+                  <h3 class="vcard__title">Don’t Comment on the Opposing Expert</h3>
+                  <p class="vcard__ctx">Cold-open character hook paired with high-retention talking-head cutdown and book CTA card.</p>
+                </div>
+                <div class="vcard__foot">
+                  <span>1080×1920 · −14 LUFS</span>
+                  <a class="ext-link" href="https://drive.google.com/file/d/1B9h84gFrvssvKWeQY9grqYvPJQ7YcKga/view" target="_blank" rel="noopener">Open ↗</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Short 3: Brian Talking Head 01 -->
+          <article class="shell">
+            <div class="core">
+              <div class="player-9x16">
+                <button type="button" class="v-cover" onclick="this.remove()" aria-label="Play Short — An expert's goal: lose the least">
+                  <img src="../assets/short_th_01.jpg" alt="An Expert's Goal: Lose the Least">
+                  <span class="v-cover__play"><span class="v-cover__dot">▶</span>Play Short (43s)</span>
+                </button>
+                <iframe src="https://drive.google.com/file/d/18WFB28Os8WbBwz0Ko2-J4N1cKc7TBWWO/preview" allow="autoplay; fullscreen" loading="lazy" title="Brian Brinig Short — An expert's goal: lose the least"></iframe>
+              </div>
+              <div class="vcard__body">
+                <div>
+                  <div class="vcard__top">
+                    <span class="tag">Talking-Head Short · 43s</span>
+                    <span class="tag tag--lang">English</span>
+                  </div>
+                  <h3 class="vcard__title">An Expert’s Goal: Lose the Least</h3>
+                  <p class="vcard__ctx">Vertical cutdown with depth-masked keyword behind speaker, full-frame 9:16 B-roll, and graphic cards.</p>
+                </div>
+                <div class="vcard__foot">
+                  <span>1080×1920 · −14 LUFS</span>
+                  <a class="ext-link" href="https://drive.google.com/file/d/18WFB28Os8WbBwz0Ko2-J4N1cKc7TBWWO/view" target="_blank" rel="noopener">Open ↗</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Short 4: Brian Talking Head 02 -->
+          <article class="shell">
+            <div class="core">
+              <div class="player-9x16">
+                <button type="button" class="v-cover" onclick="this.remove()" aria-label="Play Short — Why winning a deposition means losing">
+                  <img src="../assets/short_th_02.jpg" alt="Why Winning a Deposition Means Losing">
+                  <span class="v-cover__play"><span class="v-cover__dot">▶</span>Play Short (38s)</span>
+                </button>
+                <iframe src="https://drive.google.com/file/d/1d0Dw4zBznuGuNVApdOQVS6MCImopJX0o/preview" allow="autoplay; fullscreen" loading="lazy" title="Brian Brinig Short — Why winning a deposition means losing"></iframe>
+              </div>
+              <div class="vcard__body">
+                <div>
+                  <div class="vcard__top">
+                    <span class="tag">Talking-Head Short · 38s</span>
+                    <span class="tag tag--lang">English</span>
+                  </div>
+                  <h3 class="vcard__title">Why ‘Winning’ a Deposition Means Losing</h3>
+                  <p class="vcard__ctx">Fast-paced vertical cut extracted from a 10-minute lecture—zero dead air and word-accurate captions.</p>
+                </div>
+                <div class="vcard__foot">
+                  <span>1080×1920 · −14 LUFS</span>
+                  <a class="ext-link" href="https://drive.google.com/file/d/1d0Dw4zBznuGuNVApdOQVS6MCImopJX0o/view" target="_blank" rel="noopener">Open ↗</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Short 5: Romain Gary Soirées FR -->
+          <article class="shell">
+            <div class="core">
+              <div class="player-9x16">
+                <video controls playsinline preload="metadata" poster="../assets/romain_soirees_fr.jpg" src="../assets/RomainGary_SOIREES_FR_story_v6.mp4"></video>
+              </div>
+              <div class="vcard__body">
+                <div>
+                  <div class="vcard__top">
+                    <span class="tag">Evening Reel · 15s</span>
+                    <span class="tag tag--lang">French</span>
+                  </div>
+                  <h3 class="vcard__title">Bistrot Romain Gary — Les Soirées</h3>
+                  <p class="vcard__ctx">Warm evening atmosphere reel in French—cinematic color grade, custom voiceover, and −15 LUFS jazz mix.</p>
+                </div>
+                <div class="vcard__foot">
+                  <span>1080×1920 · Native MP4</span>
+                  <a class="ext-link" href="../assets/RomainGary_SOIREES_FR_story_v6.mp4" target="_blank" rel="noopener">Direct MP4 ↗</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Short 6: Romain Gary Lieu FR -->
+          <article class="shell">
+            <div class="core">
+              <div class="player-9x16">
+                <video controls playsinline preload="metadata" poster="../assets/romain_lieu_fr.jpg" src="../assets/RomainGary_LIEU_FR_story_v6.mp4"></video>
+              </div>
+              <div class="vcard__body">
+                <div>
+                  <div class="vcard__top">
+                    <span class="tag">Venue Story · 15s</span>
+                    <span class="tag tag--lang">French</span>
+                  </div>
+                  <h3 class="vcard__title">Bistrot Romain Gary — L’Esprit du Lieu</h3>
+                  <p class="vcard__ctx">Story-format spot in French combining real bistro photography, motion sequences, and balanced sound design.</p>
+                </div>
+                <div class="vcard__foot">
+                  <span>1080×1920 · Native MP4</span>
+                  <a class="ext-link" href="../assets/RomainGary_LIEU_FR_story_v6.mp4" target="_blank" rel="noopener">Direct MP4 ↗</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Short 7: Romain Gary Groupes FR -->
+          <article class="shell">
+            <div class="core">
+              <div class="player-9x16">
+                <video controls playsinline preload="metadata" poster="../assets/romain_groupes_fr.jpg" src="../assets/RomainGary_GROUPES_FR_story_v6.mp4"></video>
+              </div>
+              <div class="vcard__body">
+                <div>
+                  <div class="vcard__top">
+                    <span class="tag">Private Evenings · 15s</span>
+                    <span class="tag tag--lang">French</span>
+                  </div>
+                  <h3 class="vcard__title">Bistrot Romain Gary — Soirées &amp; Groupes</h3>
+                  <p class="vcard__ctx">Vertical social campaign cut in French crafted for evening happenings and group reservations.</p>
+                </div>
+                <div class="vcard__foot">
+                  <span>1080×1920 · Native MP4</span>
+                  <a class="ext-link" href="../assets/RomainGary_GROUPES_FR_story_v6.mp4" target="_blank" rel="noopener">Direct MP4 ↗</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Short 8: DreamNova Signature Reel EN -->
+          <article class="shell">
+            <div class="core">
+              <div class="player-9x16">
+                <iframe src="https://www.youtube.com/embed/BvK2ReUEW1s?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" title="DreamNova Signature Reel (English)"></iframe>
+              </div>
+              <div class="vcard__body">
+                <div>
+                  <div class="vcard__top">
+                    <span class="tag">Studio Reel · 29s</span>
+                    <span class="tag tag--lang">English</span>
+                  </div>
+                  <h3 class="vcard__title">DreamNova Studio — Signature Showreel</h3>
+                  <p class="vcard__ctx">Vertical studio showreel combining custom visual sequences, sound design, and editorial rhythm.</p>
+                </div>
+                <div class="vcard__foot">
+                  <span>YouTube Shorts</span>
+                  <a class="ext-link" href="https://youtube.com/shorts/BvK2ReUEW1s" target="_blank" rel="noopener">Watch on YT ↗</a>
+                </div>
+              </div>
+            </div>
+          </article>
+        
+          <article class="shell">
+            <div class="core">
+              <div class="player-9x16">
+                <video controls playsinline preload="none" poster="../assets/israel_beit_shemesh.jpg" src="../assets/israel_beit_shemesh.mp4"></video>
+              </div>
+              <div class="vcard__body">
+                <div>
+                  <div class="vcard__top">
+                    <span class="tag">Before / After Reel · 23s</span>
+                    <span class="tag tag--lang">Hebrew</span>
+                  </div>
+                  <h3 class="vcard__title">Nitzan Shebagan — Beit Shemesh Garden, Before &amp; After</h3>
+                  <p class="vcard__ctx">Ad reel built from the client’s real project photos: bare yard, soil preparation, then the finished garden — Hebrew captions and logo end card.</p>
+                </div>
+                <div class="vcard__foot">
+                  <span>1080×1920 · Approved by the client</span>
+                  <a class="ext-link" href="../assets/israel_beit_shemesh.mp4" target="_blank" rel="noopener">Direct MP4 ↗</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="shell">
+            <div class="core">
+              <div class="player-9x16">
+                <video controls playsinline preload="none" poster="../assets/israel_mevasseret.jpg" src="../assets/israel_mevasseret.mp4"></video>
+              </div>
+              <div class="vcard__body">
+                <div>
+                  <div class="vcard__top">
+                    <span class="tag">Project Reel · 18s</span>
+                    <span class="tag tag--lang">Hebrew</span>
+                  </div>
+                  <h3 class="vcard__title">Nitzan Shebagan — New Private Garden, Mevasseret Zion</h3>
+                  <p class="vcard__ctx">Project reel from real photos of a new private garden — slow camera moves, Hebrew captions, logo end card and instrumental music.</p>
+                </div>
+                <div class="vcard__foot">
+                  <span>1080×1920 · Approved by the client</span>
+                  <a class="ext-link" href="../assets/israel_mevasseret.mp4" target="_blank" rel="noopener">Direct MP4 ↗</a>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- SECTION 4: LIVE WEBSITES & AI -->
+    <section class="block" id="sites">
+      <div class="container">
+        <div class="sec-head">
+          <div>
+            <p class="eyebrow">04 · Websites &amp; AI Agents (live)</p>
+            <h2 class="h2">Live Websites &amp; <em>Working AI.</em></h2>
+          </div>
+          <p class="sec-lead">
+            Not mock-ups: these are online right now. Open them on your phone, switch languages, talk to the voice agent.
+          </p>
+        </div>
+        <div class="long-grid">
+          <article class="shell">
+            <div class="core">
+              <div class="player-16x9">
+                <a class="v-cover" href="https://nitzan-shebagan.co.il" target="_blank" rel="noopener" aria-label="Open nitzan-shebagan.co.il">
+                  <img src="../assets/site_nitzan.jpg" alt="Nitzan Shebagan — Garden Design &amp; Landscaping" loading="eager">
+                  <span class="v-cover__play"><span class="v-cover__dot">↗</span>Open the live site</span>
+                </a>
+              </div>
+              <div class="vcard__body">
+                <div>
+                  <div class="vcard__top">
+                    <span class="tag">Client Website · Live</span>
+                    <span class="tag tag--lang">Hebrew · English · French</span>
+                  </div>
+                  <h3 class="vcard__title">Nitzan Shebagan — Garden Design &amp; Landscaping</h3>
+                  <p class="vcard__ctx">Trilingual showcase site for a Jerusalem landscaping company: cinematic hero, project videos, WhatsApp lead buttons.</p>
+                </div>
+                <div class="vcard__foot">
+                  <span>nitzan-shebagan.co.il</span>
+                  <a class="ext-link" href="https://nitzan-shebagan.co.il" target="_blank" rel="noopener">Visit ↗</a>
+                </div>
+              </div>
+            </div>
+          </article>
+          <article class="shell">
+            <div class="core">
+              <div class="player-16x9">
+                <a class="v-cover" href="https://dreamnova-voice-demo.vercel.app" target="_blank" rel="noopener" aria-label="Open dreamnova-voice-demo.vercel.app">
+                  <img src="../assets/site_ava.jpg" alt="Ava — AI Phone Receptionist" loading="eager">
+                  <span class="v-cover__play"><span class="v-cover__dot">↗</span>Open the live site</span>
+                </a>
+              </div>
+              <div class="vcard__body">
+                <div>
+                  <div class="vcard__top">
+                    <span class="tag">AI Voice Agent · Live Demo</span>
+                    <span class="tag tag--lang">English · French</span>
+                  </div>
+                  <h3 class="vcard__title">Ava — AI Phone Receptionist</h3>
+                  <p class="vcard__ctx">A working voice agent you can talk to: answers the call, detects urgency, books the appointment and hands a clean summary to the team.</p>
+                </div>
+                <div class="vcard__foot">
+                  <span>dreamnova-voice-demo.vercel.app</span>
+                  <a class="ext-link" href="https://dreamnova-voice-demo.vercel.app" target="_blank" rel="noopener">Visit ↗</a>
+                </div>
+              </div>
+            </div>
+          </article>
+          <article class="shell">
+            <div class="core">
+              <div class="player-16x9">
+                <a class="v-cover" href="https://leeya-3d-en.vercel.app" target="_blank" rel="noopener" aria-label="Open leeya-3d-en.vercel.app">
+                  <img src="../assets/site_leeya.jpg" alt="LeeyaMedia — YouTube Authority Studio" loading="eager">
+                  <span class="v-cover__play"><span class="v-cover__dot">↗</span>Open the live site</span>
+                </a>
+              </div>
+              <div class="vcard__body">
+                <div>
+                  <div class="vcard__top">
+                    <span class="tag">Personal-Brand Website · Live</span>
+                    <span class="tag tag--lang">English · Hebrew · French</span>
+                  </div>
+                  <h3 class="vcard__title">LeeyaMedia — YouTube Authority Studio</h3>
+                  <p class="vcard__ctx">Immersive 3D brand site for a YouTube strategist: scroll-driven scenes, sound design, three languages.</p>
+                </div>
+                <div class="vcard__foot">
+                  <span>leeya-3d-en.vercel.app</span>
+                  <a class="ext-link" href="https://leeya-3d-en.vercel.app" target="_blank" rel="noopener">Visit ↗</a>
+                </div>
+              </div>
+            </div>
+          </article>
+          <article class="shell">
+            <div class="core">
+              <div class="player-16x9">
+                <a class="v-cover" href="https://dreamnova-next.vercel.app/en/" target="_blank" rel="noopener" aria-label="Open dreamnova-next.vercel.app">
+                  <img src="../assets/site_next.jpg" alt="DreamNova — Our Own Studio Site" loading="eager">
+                  <span class="v-cover__play"><span class="v-cover__dot">↗</span>Open the live site</span>
+                </a>
+              </div>
+              <div class="vcard__body">
+                <div>
+                  <div class="vcard__top">
+                    <span class="tag">Studio Website · Live</span>
+                    <span class="tag tag--lang">English · French · Hebrew</span>
+                  </div>
+                  <h3 class="vcard__title">DreamNova — Our Own Studio Site</h3>
+                  <p class="vcard__ctx">Our flagship: WebGL hero, animated sequences, service catalogue and demos — the level we build for clients.</p>
+                </div>
+                <div class="vcard__foot">
+                  <span>dreamnova-next.vercel.app</span>
+                  <a class="ext-link" href="https://dreamnova-next.vercel.app/en/" target="_blank" rel="noopener">Visit ↗</a>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: OUR VIDEO PROCESS -->
+    <section class="block" id="process">
+      <div class="container">
+        <div class="sec-head">
+          <div>
+            <p class="eyebrow">05 · Video Workflow</p>
+            <h2 class="h2">How We Edit <em>Your Videos.</em></h2>
+          </div>
+          <p class="sec-lead">
+            A streamlined, reliable production pipeline designed to keep your raw field energy intact while maximizing viewer retention.
+          </p>
+        </div>
+
+        <div class="process-grid">
+          <div class="shell">
+            <div class="core step-card">
+              <span class="step-num">STEP 01 · 72H TURNAROUND</span>
+              <h3 class="step-title">First Cut in 72 Hours</h3>
+              <p class="step-desc">Drop your raw camera files (40–60+ min explorations, vlogs, or interviews) in Google Drive. You get a complete, structured first cut within 72 hours.</p>
+            </div>
+          </div>
+
+          <div class="shell">
+            <div class="core step-card">
+              <span class="step-num">STEP 02 · RETENTION PACING</span>
+              <h3 class="step-title">Hook &amp; Story Flow</h3>
+              <p class="step-desc">We pull the strongest 15–20s moment to the cold open, trim dead air and repetitive walking segments in natural silence, and pace chapters so viewers stay through the hour.</p>
+            </div>
+          </div>
+
+          <div class="shell">
+            <div class="core step-card">
+              <span class="step-num">STEP 03 · CAPTIONS &amp; CONTEXT</span>
+              <h3 class="step-title">Dynamic Subtitles &amp; Graphics</h3>
+              <p class="step-desc">Word-accurate captions for indistinct field dialogue, clean chapter markers, and subtle location/context callouts—plus a separate .SRT file for YouTube.</p>
+            </div>
+          </div>
+
+          <div class="shell">
+            <div class="core step-card">
+              <span class="step-num">STEP 04 · COLOR &amp; AUDIO</span>
+              <h3 class="step-title">Audio Cleanup &amp; Color Grade</h3>
+              <p class="step-desc">Wind &amp; harsh background noise reduction, dialogue leveling, subtle music ducking, consistent outdoor/indoor color balance, and −14 LUFS YouTube mastering.</p>
+            </div>
+          </div>
+
+          <div class="shell">
+            <div class="core step-card">
+              <span class="step-num">STEP 05 · THUMBNAILS &amp; SHORTS</span>
+              <h3 class="step-title">Thumbnails &amp; Vertical Cuts</h3>
+              <p class="step-desc">High-contrast custom thumbnails + YouTube chapter timestamps, plus vertical Shorts extracted from the best moments to drive traffic to the full video.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: CALL TO ACTION -->
+    <section class="block" id="cta" style="border-bottom:0;">
+      <div class="container">
+        <div class="shell">
+          <div class="core cta-box">
+            <p class="eyebrow"><span class="pulse"></span>Ready When You Are</p>
+            <h2>Let’s build your <em>next project.</em></h2>
+            <p>
+              Send a raw Drive folder, a website you want to beat, or just a voice note. David answers personally on WhatsApp.
+            </p>
+            <div class="cta-buttons">
+              <a class="btn btn--gold" href="https://wa.me/972584921492?text=Hi%20David%2C%20I%20saw%20the%20DreamNova%20selected%20work%20page" target="_blank" rel="noopener">
+                <span>WhatsApp David (+972 58-492-1492)</span>
+                <span class="btn__ico">↗</span>
+              </a>
+              <a class="btn btn--glass" href="https://www.instagram.com/dreamnovastudiobyamoregroup/" target="_blank" rel="noopener">
+                <span>Instagram @dreamnovastudiobyamoregroup</span>
+                <span class="btn__ico">↗</span>
+              </a>
+              <a class="btn btn--glass" href="https://dreamnova-next.vercel.app/en/" target="_blank" rel="noopener">
+                <span>DreamNova Main Site</span>
+                <span class="btn__ico">↗</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <div class="foot__row">
+      <span>© 2026 DreamNova Studio · David Amor · Jerusalem</span>
+      <span><a class="ext-link" href="https://dreamnova-next.vercel.app/en/" target="_blank" rel="noopener">dreamnova-next.vercel.app ↗</a></span>
+    </div>
+  </footer>
+</body>
+</html>
