@@ -11,7 +11,7 @@ def sub(old, new, count=1):
 WA = "https://wa.me/972584921492?text=Hi%20David%2C%20I%20saw%20the%20DreamNova%20selected%20work%20page"
 sub("<title>Selected Work for Mike Nakh TV — DreamNova Studio</title>", "<title>Selected Work — DreamNova Studio</title>")
 sub('content="Curated long-form edits, documentary features, and vertical cutdowns prepared for Mike Nakh TV (@mikenakhtv) by DreamNova Studio."',
-    'content="Real client work by DreamNova Studio, Jerusalem: long-form YouTube edits, a 60-minute documentary, a memorial film, vertical reels and live websites."')
+    'content="Real client work by DreamNova Studio: long-form YouTube edits, a 60-minute documentary, a memorial film, vertical reels and live websites."')
 s = re.sub(r'<meta property="og:title" content="[^"]*">', '<meta property="og:title" content="Selected Work — DreamNova Studio">', s)
 s = re.sub(r'<meta property="og:description" content="[^"]*">', '<meta property="og:description" content="Long-form edits, a 60-minute documentary, reels and live websites — real client work, playable on the page.">', s)
 s = re.sub(r'<meta property="og:url" content="[^"]*">', '<meta property="og:url" content="https://codenolimits.github.io/dreamnova-selected-work/portfolio/">', s)
@@ -20,7 +20,7 @@ sub('<a href="#process">72h Workflow</a>', '<a href="#sites">Websites</a>\n     
 sub('''<a class="btn btn--gold btn--sm" href="https://www.instagram.com/dreamnovastudiobyamoregroup/" target="_blank" rel="noopener">
       <span>Reply on IG</span>''', f'''<a class="btn btn--gold btn--sm" href="{WA}" target="_blank" rel="noopener">
       <span>WhatsApp</span>''')
-sub('<span class="pulse"></span>Curated Video Portfolio · Prepared for Mike Nakh TV</p>', '<span class="pulse"></span>DreamNova Studio · Jerusalem · English, French &amp; Hebrew</p>')
+sub('<span class="pulse"></span>Curated Video Portfolio · Prepared for Mike Nakh TV</p>', '<span class="pulse"></span>DreamNova Studio · English, French &amp; Hebrew</p>')
 sub('<h1 class="hero__title">Selected work for <em>Mike Nakh TV.</em></h1>', '<h1 class="hero__title">Real clients. <em>Real work.</em></h1>')
 s = re.sub(r'<p class="hero__sub">.*?</p>', '''<p class="hero__sub">
           Everything below was made for real clients and is playable right here: <strong>long-form YouTube episodes</strong>, a <strong>60-minute documentary feature</strong>, a <strong>memorial film</strong>, <strong>vertical reels</strong> in three languages, and <strong>live websites &amp; AI agents</strong> you can open and test.
@@ -31,9 +31,9 @@ sub('''<a class="btn btn--glass" href="#documentaries">
 sub('<span>Full Studio Portfolio</span>', '<span>DreamNova Main Site</span>')
 s = s.replace('href="https://dreamnova-next.vercel.app/en/portfolio/"', 'href="https://dreamnova-next.vercel.app/en/"')
 sub("featuring Brian’s English YouTube Shorts and Bistrot Romain Gary’s French evening spots.",
-    "featuring Brian’s English YouTube Shorts, Bistrot Romain Gary’s French evening spots and Hebrew reels for a Jerusalem landscaping company.")
+    "featuring Brian’s English YouTube Shorts, Bistrot Romain Gary’s French evening spots, Hebrew reels for a Jerusalem landscaping company and French Instagram ads for a jewelry brand.")
 
-def short(mp4, poster, tag, lang, title, ctx):
+def short(mp4, poster, tag, lang, title, ctx, foot="1080×1920 · Approved by the client"):
     return f'''
           <article class="shell">
             <div class="core">
@@ -50,7 +50,7 @@ def short(mp4, poster, tag, lang, title, ctx):
                   <p class="vcard__ctx">{ctx}</p>
                 </div>
                 <div class="vcard__foot">
-                  <span>1080×1920 · Approved by the client</span>
+                  <span>{foot}</span>
                   <a class="ext-link" href="../assets/{mp4}" target="_blank" rel="noopener">Direct MP4 ↗</a>
                 </div>
               </div>
@@ -62,7 +62,15 @@ isr = short("israel_beit_shemesh.mp4", "israel_beit_shemesh.jpg", "Before / Afte
             "Ad reel built from the client’s real project photos: bare yard, soil preparation, then the finished garden — Hebrew captions and logo end card.") + \
       short("israel_mevasseret.mp4", "israel_mevasseret.jpg", "Project Reel · 18s", "Hebrew",
             "Nitzan Shebagan — New Private Garden, Mevasseret Zion",
-            "Project reel from real photos of a new private garden — slow camera moves, Hebrew captions, logo end card and instrumental music.")
+            "Project reel from real photos of a new private garden — slow camera moves, Hebrew captions, logo end card and instrumental music.") + \
+      short("woodeex_03.mp4", "woodeex_03.jpg", "Instagram Ad · 27s", "French",
+            "Jewelry Brand — “The Stone Isn’t Everything”",
+            "UGC-style ad for an engagement-ring brand: hook headline in the first second, AI presenter, product close-ups of the setting, word-by-word captions, brand end card.",
+            foot="1080×1920 · AI presenter · Demo for a jewelry brand") + \
+      short("woodeex_04.mp4", "woodeex_04.jpg", "Instagram Ad · 27s", "French",
+            "Jewelry Brand — “Price Doesn’t Tell the Whole Story”",
+            "Second ad in the series: a sound-led opening on the diamond, then shape, proportions and certificate explained in 25 seconds, captions and brand end card.",
+            foot="1080×1920 · AI presenter · Demo for a jewelry brand")
 i = s.index('<!-- SECTION 4: OUR LONG-FORM EDITING PROCESS -->')
 j = s.rindex('</div>\n      </div>\n    </section>', 0, i)
 s = s[:j] + isr + "        " + s[j:]
@@ -132,7 +140,7 @@ s = re.sub(r'<a class="btn btn--gold" href="https://www.instagram.com/dreamnovas
 s = re.sub(r'<a class="btn btn--glass" href="https://wa.me/972584921492\?text=Hey[^"]*"[^>]*>\s*<span>Direct WhatsApp \(\+972 58-492-1492\)</span>',
            '<a class="btn btn--glass" href="https://www.instagram.com/dreamnovastudiobyamoregroup/" target="_blank" rel="noopener">\n                <span>Instagram @dreamnovastudiobyamoregroup</span>', s, count=1)
 sub('<span>Explore Full DreamNova Portfolio</span>', '<span>DreamNova Main Site</span>')
-sub('© 2026 DreamNova Studio · David Amor · Prepared exclusively for Mike Nakh TV (@mikenakhtv)', '© 2026 DreamNova Studio · David Amor · Jerusalem')
+sub('© 2026 DreamNova Studio · David Amor · Prepared exclusively for Mike Nakh TV (@mikenakhtv)', '© 2026 DreamNova Studio · David Amor')
 sub('dreamnova-next.vercel.app/en/portfolio ↗', 'dreamnova-next.vercel.app ↗')
 assert not re.search(r"mike|nakh", s, re.I), re.findall(r".{40}(?:mike|nakh).{40}", s, re.I)
 open("portfolio/index.html", "w", encoding="utf-8").write(s)
