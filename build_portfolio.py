@@ -11,9 +11,9 @@ def sub(old, new, count=1):
 WA = "https://wa.me/972584921492?text=Hi%20David%2C%20I%20saw%20the%20DreamNova%20selected%20work%20page"
 sub("<title>Selected Work for Mike Nakh TV — DreamNova Studio</title>", "<title>Selected Work — DreamNova Studio</title>")
 sub('content="Curated long-form edits, documentary features, and vertical cutdowns prepared for Mike Nakh TV (@mikenakhtv) by DreamNova Studio."',
-    'content="Real client work by DreamNova Studio: long-form YouTube edits, a 60-minute documentary, a memorial film, vertical reels and live websites."')
+    'content="Selected work by DreamNova Studio: long-form YouTube edits, a 60-minute documentary, a memorial film, vertical reels and live websites."')
 s = re.sub(r'<meta property="og:title" content="[^"]*">', '<meta property="og:title" content="Selected Work — DreamNova Studio">', s)
-s = re.sub(r'<meta property="og:description" content="[^"]*">', '<meta property="og:description" content="Long-form edits, a 60-minute documentary, reels and live websites — real client work, playable on the page.">', s)
+s = re.sub(r'<meta property="og:description" content="[^"]*">', '<meta property="og:description" content="Long-form edits, a 60-minute documentary, reels and live websites, playable on the page.">\n  <meta property="og:image" content="https://codenolimits.github.io/dreamnova-selected-work/assets/og_selected_work.jpg">\n  <meta property="og:image:width" content="1200">\n  <meta property="og:image:height" content="630">\n  <meta name="twitter:card" content="summary_large_image">', s)
 s = re.sub(r'<meta property="og:url" content="[^"]*">', '<meta property="og:url" content="https://codenolimits.github.io/dreamnova-selected-work/portfolio/">', s)
 sub('<span class="nav__badge">FOR @MIKENAKHTV</span>', '<span class="nav__badge">SELECTED WORK</span>')
 sub('<a href="#process">72h Workflow</a>', '<a href="#sites">Websites</a>\n      <a href="#process">Workflow</a>')
