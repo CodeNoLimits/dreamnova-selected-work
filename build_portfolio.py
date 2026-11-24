@@ -23,7 +23,7 @@ sub('''<a class="btn btn--gold btn--sm" href="https://www.instagram.com/dreamnov
 sub('<span class="pulse"></span>Curated Video Portfolio · Prepared for Mike Nakh TV</p>', '<span class="pulse"></span>DreamNova Studio · English, French &amp; Hebrew</p>')
 sub('<h1 class="hero__title">Selected work for <em>Mike Nakh TV.</em></h1>', '<h1 class="hero__title">Real clients. <em>Real work.</em></h1>')
 s = re.sub(r'<p class="hero__sub">.*?</p>', '''<p class="hero__sub">
-          Everything below was made for real clients and is playable right here: <strong>long-form YouTube episodes</strong>, a <strong>60-minute documentary feature</strong>, a <strong>memorial film</strong>, <strong>vertical reels</strong> in three languages, and <strong>live websites &amp; AI agents</strong> you can open and test.
+          Client work and our own studio builds, playable right here: <strong>long-form YouTube episodes</strong>, a <strong>60-minute documentary feature</strong>, a <strong>memorial film</strong>, <strong>vertical reels</strong> in three languages, and <strong>live websites &amp; AI agents</strong> you can open and test.
         </p>''', s, count=1, flags=re.S)
 sub('''<a class="btn btn--glass" href="#documentaries">
             <span>See 60-Min Documentary Feature</span>''', '''<a class="btn btn--glass" href="#sites">
@@ -111,10 +111,12 @@ sites = '''
             <h2 class="h2">Live Websites &amp; <em>Working AI.</em></h2>
           </div>
           <p class="sec-lead">
-            Not mock-ups: these are online right now. Open them on your phone, switch languages, talk to the voice agent.
+            Client sites, our own studio builds and one labelled concept site, all online right now. Open them on your phone, switch languages, talk to the voice agent.
           </p>
         </div>
         <div class="long-grid">''' + \
+  site("site_fogline.jpg", "https://codenolimits.github.io/fogline-psychology-demo/", "Concept Site · Live Demo", "English",
+       "Fogline Psychology — Private Practice", "A concept we built for a therapy practice, with sample content: calm layered-hills hero, booking page, intake and client portal page.", "fogline-psychology-demo") + \
   site("site_nitzan.jpg", "https://nitzan-shebagan.co.il", "Client Website · Live", "Hebrew · English · French",
        "Nitzan Shebagan — Garden Design &amp; Landscaping", "Trilingual showcase site for a Jerusalem landscaping company: cinematic hero, project videos, WhatsApp lead buttons.", "nitzan-shebagan.co.il") + \
   site("site_ava.jpg", "https://dreamnova-voice-demo.vercel.app", "AI Voice Agent · Live Demo", "English · French",
@@ -122,7 +124,9 @@ sites = '''
   site("site_leeya.jpg", "https://leeya-3d-en.vercel.app", "Personal-Brand Website · Live", "English · Hebrew · French",
        "LeeyaMedia — YouTube Authority Studio", "Immersive 3D brand site for a YouTube strategist: scroll-driven scenes, sound design, three languages.", "leeya-3d-en.vercel.app") + \
   site("site_next.jpg", "https://dreamnova-next.vercel.app/en/", "Studio Website · Live", "English · French · Hebrew",
-       "DreamNova — Our Own Studio Site", "Our flagship: WebGL hero, animated sequences, service catalogue and demos — the level we build for clients.", "dreamnova-next.vercel.app") + '''
+       "DreamNova — Our Own Studio Site", "Our flagship: WebGL hero, animated sequences, service catalogue and demos — the level we build for clients.", "dreamnova-next.vercel.app") + \
+  site("site_3d.jpg", "https://dreamnova-3d-en.vercel.app/", "Studio Website · Live", "English · French · Hebrew",
+       "DreamNova — Services &amp; Pricing", "Our second studio site: editorial type, a sculpted 3D hero, offers and prices on the page, and a walkable 3D world.", "dreamnova-3d-en.vercel.app") + '''
         </div>
       </div>
     </section>
