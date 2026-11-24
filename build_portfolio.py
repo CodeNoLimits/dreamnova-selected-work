@@ -126,7 +126,7 @@ sites = '''
   site("site_next.jpg", "https://dreamnova-next.vercel.app/en/", "Studio Website · Live", "English · French · Hebrew",
        "DreamNova — Our Own Studio Site", "Our flagship: WebGL hero, animated sequences, service catalogue and demos — the level we build for clients.", "dreamnova-next.vercel.app") + \
   site("site_3d.jpg", "https://dreamnova-3d-en.vercel.app/", "Studio Website · Live", "English · French · Hebrew",
-       "DreamNova — Services &amp; Pricing", "Our second studio site: editorial type, a sculpted 3D hero, offers and prices on the page, and a walkable 3D world.", "dreamnova-3d-en.vercel.app") + '''
+       "DreamNova — Services &amp; Pricing", "Our second studio site: editorial type, a sculpted 3D hero, offers and prices on the page, and a 3D world to explore.", "dreamnova-3d-en.vercel.app") + '''
         </div>
       </div>
     </section>
