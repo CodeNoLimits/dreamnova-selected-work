@@ -423,12 +423,12 @@
       texture.colorSpace = THREE.SRGBColorSpace;
       const mat = new THREE.MeshBasicMaterial({ map: texture });
       const mesh = new THREE.Mesh(geom, mat);
-      // Center of equirectangular image (u=0.5, Hanoukia & window) maps to +X; start camera looking at +X (lon=0)
+      // Center of equirectangular image (u=0.5) maps to -X after geom.scale(-1,1,1); start camera looking at -X (lon=180)
       mesh.rotation.y = 0;
       scene.add(mesh);
 
-      let lon = 0, lat = -5;
-      let isDown = false, startX = 0, startY = 0, startLon = 0, startLat = -5;
+      let lon = 180, lat = -5;
+      let isDown = false, startX = 0, startY = 0, startLon = 180, startLat = -5;
 
       const onDown = (x, y) => { isDown = true; startX = x; startY = y; startLon = lon; startLat = lat; };
       const onMove = (x, y) => {
@@ -453,7 +453,7 @@
         video.muted = !video.muted;
         if (!video.muted && video.paused) video.play().catch(() => {});
       });
-      btnReset.addEventListener('click', () => { lon = 0; lat = -5; });
+      btnReset.addEventListener('click', () => { lon = 180; lat = -5; });
       btnFull.addEventListener('click', () => {
         if (document.fullscreenElement) document.exitFullscreen();
         else mount.requestFullscreen?.().catch(() => {});
