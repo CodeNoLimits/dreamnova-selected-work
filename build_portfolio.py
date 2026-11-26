@@ -16,7 +16,7 @@ s = re.sub(r'<meta property="og:title" content="[^"]*">', '<meta property="og:ti
 s = re.sub(r'<meta property="og:description" content="[^"]*">', '<meta property="og:description" content="Long-form edits, a 60-minute documentary, reels and live websites, playable on the page.">\n  <meta property="og:image" content="https://codenolimits.github.io/dreamnova-selected-work/assets/og_selected_work.jpg">\n  <meta property="og:image:width" content="1200">\n  <meta property="og:image:height" content="630">\n  <meta name="twitter:card" content="summary_large_image">', s)
 s = re.sub(r'<meta property="og:url" content="[^"]*">', '<meta property="og:url" content="https://codenolimits.github.io/dreamnova-selected-work/portfolio/">', s)
 sub('<span class="nav__badge">FOR @MIKENAKHTV</span>', '<span class="nav__badge">SELECTED WORK</span>')
-sub('<a href="#process">72h Workflow</a>', '<a href="#sites">Websites</a>\n      <a href="#process">Workflow</a>')
+sub('<a href="#process">72h Workflow</a>', '<a href="../luxury/" style="color:var(--gold-lt)">Luxury &amp; Horology ↗</a>\n      <a href="#sites">Websites</a>\n      <a href="#process">Workflow</a>')
 sub('''<a class="btn btn--gold btn--sm" href="https://www.instagram.com/dreamnovastudiobyamoregroup/" target="_blank" rel="noopener">
       <span>Reply on IG</span>''', f'''<a class="btn btn--gold btn--sm" href="{WA}" target="_blank" rel="noopener">
       <span>WhatsApp</span>''')
@@ -26,7 +26,11 @@ s = re.sub(r'<p class="hero__sub">.*?</p>', '''<p class="hero__sub">
           Client work and our own studio builds, playable right here: <strong>long-form YouTube episodes</strong>, a <strong>60-minute documentary feature</strong>, a <strong>memorial film</strong>, <strong>vertical reels</strong> in three languages, and <strong>live websites &amp; AI agents</strong> you can open and test.
         </p>''', s, count=1, flags=re.S)
 sub('''<a class="btn btn--glass" href="#documentaries">
-            <span>See 60-Min Documentary Feature</span>''', '''<a class="btn btn--glass" href="#sites">
+            <span>See 60-Min Documentary Feature</span>''', '''<a class="btn btn--glass" href="../luxury/">
+            <span>Luxury &amp; Horology ↗</span>
+            <span class="btn__ico">↗</span>
+          </a>
+          <a class="btn btn--glass" href="#sites">
             <span>See Live Websites &amp; AI</span>''')
 sub('<span>Full Studio Portfolio</span>', '<span>DreamNova Main Site</span>')
 s = s.replace('href="https://dreamnova-next.vercel.app/en/portfolio/"', 'href="https://dreamnova-next.vercel.app/en/"')

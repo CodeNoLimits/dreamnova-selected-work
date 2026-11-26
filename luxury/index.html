@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Haute Horlogerie &amp; Fine Jewelry Motion — DreamNova Studio</title>
+  <meta name="description" content="Vertical luxury reels, haute horlogerie macro studies, fine jewelry campaigns, and WebGL flagships by DreamNova Studio.">
+  <meta name="theme-color" content="#050403">
+  <meta name="robots" content="noindex, nofollow">
+  <meta property="og:title" content="Haute Horlogerie &amp; Fine Jewelry Motion — DreamNova Studio">
+  <meta property="og:description" content="Cinema-grade 9:16 watchmaking &amp; fine jewelry motion studies, real luxury campaigns, and bespoke digital flagships.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://codenolimits.github.io/dreamnova-selected-work/luxury/">
+  <link rel="icon" href="../assets/crest.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #050403;
+      --bg2: #0b0907;
+      --ink: #f4efe6;
+      --mute: #b5ada0;
+      --dim: #8a8276;
+      --gold: #d4af37;
+      --gold-lt: #f0d98c;
+      --gold-pale: #f7e9b8;
+      --amber: #e0a23d;
+      --line: rgba(240, 217, 140, 0.16);
+      --line2: rgba(255, 255, 255, 0.08);
+      --ease: cubic-bezier(0.32, 0.72, 0, 1);
+      --f-display: "Bricolage Grotesque", system-ui, -apple-system, sans-serif;
+      --f-accent: "Instrument Serif", Georgia, serif;
+      --f-body: "Manrope", system-ui, -apple-system, sans-serif;
+      --f-mono: "JetBrains Mono", monospace;
+      --pad: clamp(18px, 4.5vw, 68px);
+      --r: 24px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { background: var(--bg); color: var(--ink); scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    body { font-family: var(--f-body); font-size: 16px; line-height: 1.6; background: var(--bg); color: var(--ink); overflow-x: hidden; }
+    a { color: inherit; text-decoration: none; }
+    img, video { display: block; max-width: 100%; }
+    em { font-family: var(--f-accent); font-style: italic; font-weight: 400; }
+    ::selection { background: var(--gold); color: #000; }
+
+    .grain {
+      position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: 0.038;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    .nav {
+      position: fixed; z-index: 80; top: 16px; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 7px 8px 7px 16px; border-radius: 999px;
+      background: rgba(14, 11, 8, 0.78); backdrop-filter: blur(22px) saturate(1.3); -webkit-backdrop-filter: blur(22px) saturate(1.3);
+      box-shadow: inset 0 0 0 1px rgba(240, 217, 140, 0.18), 0 20px 50px -20px rgba(0, 0, 0, 0.85);
+      width: min(1160px, calc(100vw - 24px));
+    }
+    .nav__brand { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .nav__name { font: 700 15px/1 var(--f-display); letter-spacing: -0.01em; }
+    .nav__badge {
+      font: 500 10.5px/1 var(--f-mono); color: var(--gold-lt); padding: 5px 10px; border-radius: 999px;
+      background: rgba(212, 175, 55, 0.12); border: 1px solid rgba(240, 217, 140, 0.25); letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .nav__links { display: flex; align-items: center; gap: 4px; }
+    .nav__links a { padding: 8px 13px; border-radius: 999px; font-size: 13px; font-weight: 500; color: var(--mute); transition: color 0.25s, background 0.25s; white-space: nowrap; }
+    .nav__links a:hover { color: var(--ink); background: rgba(255, 255, 255, 0.06); }
+
+    .btn {
+      --h: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+      height: var(--h); padding-inline: 22px 6px; border-radius: 999px; font: 600 14.5px/1 var(--f-body);
+      transition: transform 0.45s var(--ease), box-shadow 0.45s var(--ease), background 0.3s; white-space: nowrap; cursor: pointer; border: 0;
+    }
+    .btn__ico { display: grid; place-items: center; width: calc(var(--h) - 12px); height: calc(var(--h) - 12px); border-radius: 50%; font-size: 14px; }
+    .btn--gold {
+      background: linear-gradient(180deg, #f3dc93, #d4af37 60%, #b8912a); color: #140f04;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 10px 36px -10px rgba(212, 175, 55, 0.55);
+    }
+    .btn--gold .btn__ico { background: rgba(20, 15, 4, 0.14); }
+    .btn--glass {
+      background: rgba(255, 255, 255, 0.06); color: var(--ink);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+    .btn--glass .btn__ico { background: rgba(255, 255, 255, 0.09); }
+    .btn--sm { --h: 38px; padding-inline: 16px 5px; font-size: 13px; gap: 8px; }
+
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 10px; padding: 7px 14px; border-radius: 999px;
+      font: 600 11px/1 var(--f-mono); letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--gold-lt); box-shadow: inset 0 0 0 1px rgba(240, 217, 140, 0.3); background: rgba(212, 175, 55, 0.07);
+    }
+    .pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--gold-lt); animation: pulse 2.2s infinite; }
+    @keyframes pulse { 70% { box-shadow: 0 0 0 9px rgba(240, 217, 140, 0); } 100% { box-shadow: 0 0 0 0 rgba(240, 217, 140, 0); } }
+
+    .container { max-width: 1320px; margin-inline: auto; width: 100%; }
+
+    .hero {
+      position: relative; padding: clamp(112px, 12vw, 150px) var(--pad) clamp(56px, 7vw, 88px);
+      overflow: hidden; isolation: isolate; border-bottom: 1px solid var(--line2);
+    }
+    .hero__bg {
+      position: absolute; inset: 0; z-index: -1;
+      background:
+        radial-gradient(50% 55% at 78% 35%, rgba(212, 175, 55, 0.22), transparent 72%),
+        radial-gradient(40% 45% at 15% 75%, rgba(224, 162, 61, 0.10), transparent 70%),
+        linear-gradient(180deg, #090705 0%, var(--bg) 100%);
+    }
+    .hero__grid {
+      display: grid; grid-template-columns: 1.25fr 0.75fr; gap: clamp(28px, 5vw, 64px); align-items: center;
+    }
+    .hero__title {
+      margin-top: 20px; font: 700 clamp(36px, 5.4vw, 78px)/0.96 var(--f-display); letter-spacing: -0.035em; max-width: 14ch;
+    }
+    .hero__title em {
+      font-size: 1.08em; letter-spacing: -0.02em;
+      background: linear-gradient(100deg, var(--gold-pale) 0%, var(--gold) 45%, var(--amber) 72%, var(--gold-pale) 100%);
+      -webkit-background-clip: text; background-clip: text; color: transparent; padding-inline-end: 0.06em;
+    }
+    .hero__sub { margin-top: 20px; max-width: 56ch; font-size: clamp(16px, 1.3vw, 18.5px); color: #d5cdbf; line-height: 1.65; }
+    .hero__sub strong { color: var(--gold-pale); font-weight: 600; }
+    .hero__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+    .hero__specs {
+      margin-top: 38px; padding-top: 22px; border-top: 1px solid var(--line);
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;
+    }
+    .spec-item b { display: block; font: 700 clamp(20px, 2vw, 28px)/1.05 var(--f-display); color: var(--gold-pale); }
+    .spec-item span { display: block; margin-top: 5px; font-size: 12.5px; color: var(--mute); }
+
+    .showreel-wrap { max-width: 340px; margin-inline: auto; width: 100%; }
+
+    section.block { padding: clamp(56px, 8vw, 108px) var(--pad); border-bottom: 1px solid var(--line2); scroll-margin-top: 84px; }
+    .sec-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; margin-bottom: clamp(28px, 4vw, 48px); }
+    .h2 { font: 700 clamp(26px, 4vw, 52px)/1.02 var(--f-display); letter-spacing: -0.03em; margin-top: 14px; }
+    .sec-lead { max-width: 50ch; font-size: 15px; color: var(--mute); }
+
+    .shell {
+      padding: 5px; border-radius: var(--r);
+      background: linear-gradient(160deg, rgba(240, 217, 140, 0.22), rgba(255, 255, 255, 0.03) 42%, rgba(240, 217, 140, 0.1));
+      box-shadow: 0 28px 80px -32px rgba(0, 0, 0, 0.92);
+      transition: transform 0.45s var(--ease);
+    }
+    .shell:hover { transform: translateY(-3px); }
+    .core {
+      height: 100%; border-radius: calc(var(--r) - 5px);
+      background: linear-gradient(180deg, #120f0b, #090705);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+      overflow: hidden; display: flex; flex-direction: column;
+    }
+
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+
+    .player-9x16 { position: relative; width: 100%; aspect-ratio: 9 / 16; background: #000; border-bottom: 1px solid var(--line2); }
+    .player-9x16 video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border: 0; }
+    .player-16x9 { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; border-bottom: 1px solid var(--line2); }
+    .player-16x9 img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--ease); }
+    .shell:hover .player-16x9 img { transform: scale(1.03); }
+
+    .vcard__body { padding: 20px 22px 22px; display: flex; flex-direction: column; justify-content: space-between; flex: 1; gap: 14px; }
+    .vcard__top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+    .tag {
+      display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px;
+      font: 600 10px/1 var(--f-mono); letter-spacing: 0.09em; text-transform: uppercase;
+      color: var(--gold-lt); background: rgba(212, 175, 55, 0.1); border: 1px solid rgba(240, 217, 140, 0.24);
+    }
+    .tag--lang { color: var(--mute); background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.1); }
+    .vcard__title { margin-top: 10px; font: 600 18.5px/1.25 var(--f-display); color: var(--ink); }
+    .vcard__ctx { margin-top: 7px; font-size: 13.8px; line-height: 1.55; color: var(--mute); }
+    .vcard__foot {
+      padding-top: 12px; border-top: 1px solid var(--line2);
+      display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 12px; color: var(--dim);
+    }
+    .ext-link { font-weight: 600; color: var(--gold-lt); }
+    .ext-link:hover { text-decoration: underline; }
+
+    .cta-box {
+      padding: clamp(32px, 5vw, 60px); text-align: center; align-items: center;
+      background: radial-gradient(60% 80% at 50% 0%, rgba(212, 175, 55, 0.16), transparent 70%), linear-gradient(180deg, #13100b, #090705);
+    }
+    .cta-box h2 { font: 700 clamp(26px, 4vw, 48px)/1.04 var(--f-display); max-width: 20ch; margin: 16px auto 0; }
+    .cta-box p { max-width: 52ch; margin: 14px auto 0; color: var(--mute); font-size: 15.5px; }
+    .cta-buttons { margin-top: 26px; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+
+    .foot { padding: 34px var(--pad) 46px; font-size: 13px; color: var(--dim); }
+    .foot__row { max-width: 1320px; margin-inline: auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; }
+
+    @media (max-width: 980px) {
+      .hero__grid { grid-template-columns: 1fr; }
+      .grid-3 { grid-template-columns: 1fr; max-width: 440px; margin-inline: auto; }
+    }
+    @media (max-width: 760px) {
+      .nav__links, .nav__badge { display: none; }
+      .hero__specs { grid-template-columns: 1fr 1fr; }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="nav">
+    <a href="#top" class="nav__brand">
+      <img src="../assets/crest.svg" alt="DreamNova" width="24" height="30">
+      <span class="nav__name">DreamNova</span>
+      <span class="nav__badge">LUXURY &amp; HOROLOGY</span>
+    </a>
+    <nav class="nav__links" aria-label="Sections">
+      <a href="#studies">Horology &amp; Jewelry Studies</a>
+      <a href="#campaigns">Client Campaigns</a>
+      <a href="#digital">Luxury 3D Web</a>
+      <a href="../portfolio/">Full Portfolio ↗</a>
+    </nav>
+    <a class="btn btn--gold btn--sm" href="https://wa.me/972584921492?text=Hi%20David%2C%20I%20saw%20the%20Luxury%20%26%20Horology%20showcase" target="_blank" rel="noopener">
+      <span>WhatsApp</span>
+      <span class="btn__ico">↗</span>
+    </a>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero__bg" aria-hidden="true"></div>
+      <div class="container hero__grid">
+        <div>
+          <p class="eyebrow"><span class="pulse"></span>London · Geneva · Paris · Haute Horlogerie &amp; Fine Jewelry</p>
+          <h1 class="hero__title">Vertical craft for <em>collectors &amp; maisons.</em></h1>
+          <p class="hero__sub">
+            Built for independent watchmakers, luxury retailers, and fine jewelry houses: <strong>9:16 horology &amp; macro diamond motion studies</strong>, <strong>real client social campaigns</strong>, and <strong>bespoke digital flagships</strong>. Everything below plays natively right on this page.
+          </p>
+          <div class="hero__actions">
+            <a class="btn btn--gold" href="#studies">
+              <span>Watch 9:16 Luxury Pieces</span>
+              <span class="btn__ico">↓</span>
+            </a>
+            <a class="btn btn--glass" href="#campaigns">
+              <span>Real Jewelry Campaigns</span>
+              <span class="btn__ico">↓</span>
+            </a>
+            <a class="btn btn--glass" href="../portfolio/">
+              <span>Full Client Portfolio</span>
+              <span class="btn__ico">↗</span>
+            </a>
+          </div>
+          <div class="hero__specs">
+            <div class="spec-item">
+              <b>9:16 Cinema</b>
+              <span>Native vertical framing &amp; −16 LUFS sound design</span>
+            </div>
+            <div class="spec-item">
+              <b>72h Turnaround</b>
+              <span>Standalone trial Shorts or ongoing review cutdowns</span>
+            </div>
+            <div class="spec-item">
+              <b>Zero Templates</b>
+              <span>Paced around the calibre, stone &amp; story</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="showreel-wrap">
+          <div class="shell">
+            <div class="core">
+              <div class="player-9x16">
+                <video controls playsinline preload="metadata" poster="../assets/luxury_showreel_2026.jpg" src="../assets/luxury_showreel_2026.mp4"></video>
+              </div>
+              <div class="vcard__body" style="padding:14px 18px;">
+                <div class="vcard__top">
+                  <span class="tag">2026 Luxury Showreel · 24s</span>
+                  <span class="tag tag--lang">9:16</span>
+                </div>
+                <div class="vcard__foot" style="border-top:0;padding-top:4px;">
+                  <span>Horology Specs + Real Jewelry</span>
+                  <a class="ext-link" href="../assets/luxury_showreel_2026.mp4" target="_blank" rel="noopener">Direct MP4 ↗</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="studies">
+      <div class="container">
+        <div class="sec-head">
+          <div>
+            <p class="eyebrow">01 · Vertical Motion Studies (9:16)</p>
+            <h2 class="h2">Haute Horlogerie &amp; <em>Fine Jewelry.</em></h2>
+          </div>
+          <p class="sec-lead">
+            Three bespoke vertical pieces combining cinema macro generation on Google Flow with photorealistic worn diamond renders and tailored soundscapes.
+          </p>
+        </div>
+
+        <div class="grid-3">
+          <article class="shell">
+            <div class="core">
+              <div class="player-9x16">
+                <video controls playsinline preload="metadata" poster="../assets/spec_horology_calibre.jpg" src="../assets/spec_horology_calibre.mp4"></video>
+              </div>
+              <div class="vcard__body">
+                <div>
+                  <div class="vcard__top">
+                    <span class="tag">Studio Spec · 8s</span>
+                    <span class="tag tag--lang">Haute Horlogerie</span>
+                  </div>
+                  <h3 class="vcard__title">Calibre &amp; Tourbillon Macro Study</h3>
+                  <p class="vcard__ctx">Macro dolly glide across hand-beveled rose-gold bridges, blued steel screws, Geneva stripes and balance wheel over obsidian slate, paired with mechanical escapement foley.</p>
+                </div>
+                <div class="vcard__foot">
+                  <span>720×1280 · Studio Spec</span>
+                  <a class="ext-link" href="../assets/spec_horology_calibre.mp4" target="_blank" rel="noopener">Direct MP4 ↗</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="shell">
+            <div class="core">
+              <div class="player-9x16">
+                <video controls playsinline preload="metadata" poster="../assets/spec_horology_collector.jpg" src="../assets/spec_horology_collector.mp4"></video>
+              </div>
+              <div class="vcard__body">
+                <div>
+                  <div class="vcard__top">
+                    <span class="tag">Studio Spec · 8s</span>
+                    <span class="tag tag--lang">Collector Salon</span>
+                  </div>
+                  <h3 class="vcard__title">Mayfair Salon Collector Reveal</h3>
+                  <p class="vcard__ctx">Slow-motion cotton-gloved presentation lifting a rose-gold tourbillon with midnight blue guilloché dial from a walnut tray under warm gallery lighting.</p>
+                </div>
+                <div class="vcard__foot">
+                  <span>720×1280 · Studio Spec</span>
+                  <a class="ext-link" href="../assets/spec_horology_collector.mp4" target="_blank" rel="noopener">Direct MP4 ↗</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="shell">
+            <div class="core">
+              <div class="player-9x16">
+                <video controls playsinline preload="metadata" poster="../assets/spec_jewelry_editorial.jpg" src="../assets/spec_jewelry_editorial.mp4"></video>
+              </div>
+              <div class="vcard__body">
+                <div>
+                  <div class="vcard__top">
+                    <span class="tag">Spec + Real Renders · 12s</span>
+                    <span class="tag tag--lang">Fine Jewelry</span>
+                  </div>
+                  <h3 class="vcard__title">Emerald-Cut &amp; Prismatic Caustics</h3>
+                  <p class="vcard__ctx">Place Vendôme black-velvet emerald solitaire hero transitioning into real high-jewelry client diamond ring motion cuts reframed for full-bleed 9:16.</p>
+                </div>
+                <div class="vcard__foot">
+                  <span>720×1280 · Spec + Real Assets</span>
+                  <a class="ext-link" href="../assets/spec_jewelry_editorial.mp4" target="_blank" rel="noopener">Direct MP4 ↗</a>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="campaigns">
+      <div class="container">
+        <div class="sec-head">
+          <div>
+            <p class="eyebrow">02 · Real Client Campaigns (9:16)</p>
+            <h2 class="h2">Fine Jewelry <em>Social Reels.</em></h2>
+          </div>
+          <p class="sec-lead">
+            Paid-social vertical creatives produced for a European fine jewelry brand: hook-first pacing, product close-ups, synced captions and clean brand end cards.
+          </p>
+        </div>
+
+        <div class="grid-2" style="max-width:880px;margin-inline:auto;">
+          <article class="shell">
+            <div class="core">
+              <div class="player-9x16">
+                <video controls playsinline preload="metadata" poster="../assets/jewelry_campaign_01.jpg" src="../assets/jewelry_campaign_01.mp4"></video>
+              </div>
+              <div class="vcard__body">
+                <div>
+                  <div class="vcard__top">
+                    <span class="tag">Brand Reel · 27s</span>
+                    <span class="tag tag--lang">French</span>
+                  </div>
+                  <h3 class="vcard__title">Fine Jewelry Maison — “The Stone Isn’t Everything”</h3>
+                  <p class="vcard__ctx">Hook headline in the opening second, presenter storytelling, precision close-ups of the ring setting, word-by-word captions and maison end card.</p>
+                </div>
+                <div class="vcard__foot">
+                  <span>1080×1920 · Fine Jewelry Brand</span>
+                  <a class="ext-link" href="../assets/jewelry_campaign_01.mp4" target="_blank" rel="noopener">Direct MP4 ↗</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="shell">
+            <div class="core">
+              <div class="player-9x16">
+                <video controls playsinline preload="metadata" poster="../assets/jewelry_campaign_02.jpg" src="../assets/jewelry_campaign_02.mp4"></video>
+              </div>
+              <div class="vcard__body">
+                <div>
+                  <div class="vcard__top">
+                    <span class="tag">Brand Reel · 27s</span>
+                    <span class="tag tag--lang">French</span>
+                  </div>
+                  <h3 class="vcard__title">Fine Jewelry Maison — “Price Doesn’t Tell the Whole Story”</h3>
+                  <p class="vcard__ctx">Tactile acoustic opening on the diamond, then cut proportions, light performance and certification distilled into 27 high-retention seconds.</p>
+                </div>
+                <div class="vcard__foot">
+                  <span>1080×1920 · Fine Jewelry Brand</span>
+                  <a class="ext-link" href="../assets/jewelry_campaign_02.mp4" target="_blank" rel="noopener">Direct MP4 ↗</a>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="digital">
+      <div class="container">
+        <div class="sec-head">
+          <div>
+            <p class="eyebrow">03 · Bespoke Web &amp; Interactive 3D</p>
+            <h2 class="h2">Digital Flagships <em>Live Online.</em></h2>
+          </div>
+          <p class="sec-lead">
+            Beyond vertical video: bespoke WebGL storefronts and multilingual brand worlds built in-house.
+          </p>
+        </div>
+        <div class="grid-2">
+          <article class="shell">
+            <div class="core">
+              <a class="player-16x9" href="https://dreamnova-next.vercel.app/en/" target="_blank" rel="noopener">
+                <img src="../assets/site_next.jpg" alt="DreamNova WebGL Studio Flagship">
+              </a>
+              <div class="vcard__body">
+                <div>
+                  <div class="vcard__top">
+                    <span class="tag">WebGL Flagship · Live</span>
+                    <span class="tag tag--lang">EN · FR · HE</span>
+                  </div>
+                  <h3 class="vcard__title">DreamNova — Interactive Studio Flagship</h3>
+                  <p class="vcard__ctx">Real-time WebGL hero, animated sequences and curated service architecture.</p>
+                </div>
+                <div class="vcard__foot">
+                  <span>dreamnova-next.vercel.app</span>
+                  <a class="ext-link" href="https://dreamnova-next.vercel.app/en/" target="_blank" rel="noopener">Open Live ↗</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="shell">
+            <div class="core">
+              <a class="player-16x9" href="https://leeya-3d-en.vercel.app" target="_blank" rel="noopener">
+                <img src="../assets/site_leeya.jpg" alt="Immersive 3D Brand House">
+              </a>
+              <div class="vcard__body">
+                <div>
+                  <div class="vcard__top">
+                    <span class="tag">3D Brand House · Live</span>
+                    <span class="tag tag--lang">EN · HE · FR</span>
+                  </div>
+                  <h3 class="vcard__title">Immersive 3D Brand Experience</h3>
+                  <p class="vcard__ctx">Scroll-driven 3D scenes, bespoke sound design and multi-language editorial pacing.</p>
+                </div>
+                <div class="vcard__foot">
+                  <span>leeya-3d-en.vercel.app</span>
+                  <a class="ext-link" href="https://leeya-3d-en.vercel.app" target="_blank" rel="noopener">Open Live ↗</a>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="container">
+        <div class="shell">
+          <div class="core cta-box">
+            <span class="eyebrow">Direct Studio Line</span>
+            <h2>Ready for a bespoke <em>watch or jewelry cut?</em></h2>
+            <p>Send a review link, a product clip, or a collection brief. David Amor replies directly on WhatsApp.</p>
+            <div class="cta-buttons">
+              <a class="btn btn--gold" href="https://wa.me/972584921492?text=Hi%20David%2C%20I%20saw%20your%20Luxury%20%26%20Horology%20showcase" target="_blank" rel="noopener">
+                <span>WhatsApp David (+972 58-492-1492)</span>
+                <span class="btn__ico">↗</span>
+              </a>
+              <a class="btn btn--glass" href="../portfolio/">
+                <span>View Full Client Portfolio</span>
+                <span class="btn__ico">↗</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <div class="foot__row">
+      <span>© 2026 DreamNova Studio · David Amor · Haute Horlogerie &amp; Fine Jewelry Showcase</span>
+      <span><a class="ext-link" href="../portfolio/">Full Portfolio ↗</a></span>
+    </div>
+  </footer>
+</body>
+</html>
