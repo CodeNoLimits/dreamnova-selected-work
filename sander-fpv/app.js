@@ -653,7 +653,8 @@ function toggleOrFlipSiddur() {
 async function initAssets() {
   const loaderEl = document.getElementById('loader');
   const loaderTxt = document.getElementById('loader-txt');
-  const res = await fetch('assets/scene_manifest.json');
+  const ASSET_VER = '20261127f';
+  const res = await fetch(`assets/scene_manifest.json?v=${ASSET_VER}`);
   manifest = await res.json();
   tableTopY = manifest.table_top_y || 0.5429;
   MENORAH_REST_POS.y = tableTopY;
@@ -661,7 +662,7 @@ async function initAssets() {
 
   const texLoader = new THREE.TextureLoader();
   const loadLightmap = new Promise((resolve) => {
-    texLoader.load('assets/textures/lightmap_salon.jpg', (t) => {
+    texLoader.load(`assets/textures/lightmap_salon.jpg?v=${ASSET_VER}`, (t) => {
       t.colorSpace = THREE.SRGBColorSpace;
       t.flipY = false;
       t.channel = 1;
@@ -670,7 +671,7 @@ async function initAssets() {
   });
 
   const gltfLoader = new GLTFLoader();
-  const loadGLB = (name) => new Promise((resolve, reject) => gltfLoader.load(`assets/models/${name}`, resolve, undefined, reject));
+  const loadGLB = (name) => new Promise((resolve, reject) => gltfLoader.load(`assets/models/${name}?v=${ASSET_VER}`, resolve, undefined, reject));
 
   loaderTxt.textContent = 'Chargement salon Cycles GI, Jérusalem 3D, Siddour & main réaliste…';
   const [
@@ -727,7 +728,21 @@ async function initAssets() {
   });
   scene.add(salonG.scene);
 
-  // Authentic 3D Old City of Jerusalem Exterior
+  // Authentic 3D Old City of Jerusalem Exterior with feathered night sky horizon edge
+  const hc = document.createElement('canvas');
+  hc.width = 256; hc.height = 256;
+  const hctx = hc.getContext('2d');
+  hctx.fillStyle = 'white';
+  hctx.fillRect(0, 0, 256, 256);
+  const tg = hctx.createLinearGradient(0, 0, 0, 256);
+  tg.addColorStop(0.0, 'black');
+  tg.addColorStop(0.22, 'white');
+  tg.addColorStop(1.0, 'white');
+  hctx.globalCompositeOperation = 'multiply';
+  hctx.fillStyle = tg;
+  hctx.fillRect(0, 0, 256, 256);
+  const horizonAlphaTex = new THREE.CanvasTexture(hc);
+
   jerExtG.scene.traverse((o) => {
     if (o.isMesh) {
       o.receiveShadow = true;
@@ -735,6 +750,12 @@ async function initAssets() {
       if (o.name.includes('glass') && o.material) {
         o.material.emissive = new THREE.Color(0xffb55c);
         o.material.emissiveIntensity = 1.6;
+      }
+      if (o.name.includes('Horizon') && o.material) {
+        o.material.transparent = true;
+        o.material.alphaMap = horizonAlphaTex;
+        o.material.depthWrite = false;
+        o.material.needsUpdate = true;
       }
     }
   });
