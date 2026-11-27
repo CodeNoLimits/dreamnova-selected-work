@@ -58,9 +58,26 @@
     1,
     0
   ],
+  "dreidel_base_y": 0.0,
   "fpv_shamash_flame_local": [
     -0.008,
     0.197,
     -0.1281
+  ],
+  "person_bones": [
+    "Hips",
+    "Spine",
+    "Spine1",
+    "Spine2",
+    "Neck",
+    "Head",
+    "LeftShoulder",
+    "LeftArm",
+    "LeftForeArm",
+    "LeftHand",
+    "RightShoulder",
+    "RightArm",
+    "RightForeArm",
+    "RightHand"
   ]
 }

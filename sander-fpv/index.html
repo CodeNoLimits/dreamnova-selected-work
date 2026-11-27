@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Simulateur VR Première Personne — Allumage de la Hanoukkia 3D</title>
+  <title>Expérience 3D Immersive — Hanoukkia Photoréaliste Première Personne &amp; WebXR</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><text y='52' font-size='52'>🕎</text></svg>">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=20261127b">
   <script type="importmap">
     {
       "imports": {
@@ -24,14 +24,14 @@
 
   <div id="loader">
     <div class="spinner"></div>
-    <div id="loader-txt">Chargement de la scène VR PBR 3D…</div>
+    <div id="loader-txt">Chargement de la scène 3D PBR HDR…</div>
   </div>
 
   <div id="hud-top">
     <div class="hud-card">
       <div>
-        <div class="brand" id="ui-title">Simulation Casque VR — Première Personne</div>
-        <div class="sub" id="ui-sub">Tenez le Shamash et allumez la hanoukkia · Bougez la souris et cliquez sur chaque mèche</div>
+        <div class="brand" id="ui-title">Hanoukkia 3D Première Personne — Simulation VR</div>
+        <div class="sub" id="ui-sub">Déplacez-vous en 3D (WASD / souris) · Regardez sous tous les angles</div>
       </div>
     </div>
     <div class="hud-card">
@@ -42,19 +42,23 @@
   </div>
 
   <div id="help-strip">
-    Glisser ou bouger la souris pour regarder · WASD / Flèches pour s'approcher · Clic ou Espace pour allumer une mèche · Clic sur une toupie pour la faire tourner
+    Glisser pour regarder 360° · WASD / Flèches pour marcher · Toupie : clic pour tourner · H : masquer/afficher l'interface
   </div>
 
   <div id="hud-bottom">
-    <button class="ctrl primary" id="btn-ignite-next">🔥 Allumer la mèche suivante</button>
-    <button class="ctrl" id="btn-shamash">🕯️ Reposer le Shamash</button>
-    <button class="ctrl" id="btn-reset">↺ Rallumer (Reset)</button>
+    <button class="ctrl primary active" id="btn-mode-scene">🧑 Scène Personnage</button>
+    <button class="ctrl" id="btn-mode-self">🕯️ Allumer moi-même</button>
+    <button class="ctrl" id="btn-cam-front">👁️ Face</button>
+    <button class="ctrl" id="btn-cam-left">◀️ Côté gauche</button>
+    <button class="ctrl" id="btn-cam-window">🪟 Fenêtre</button>
+    <button class="ctrl" id="btn-replay">🎬 Rejouer</button>
+    <button class="ctrl" id="btn-ignite-next" style="display:none">🔥 Allumer</button>
     <button class="ctrl active" id="btn-vr-mask">🥽 Casque VR : ON</button>
-    <button class="ctrl" id="btn-audio">🔊 Audio : OFF</button>
+    <button class="ctrl" id="btn-audio">🔇 Audio : OFF</button>
     <button class="ctrl" id="btn-lang">עברית / FR</button>
     <div id="vr-btn-slot"></div>
   </div>
 
-  <script type="module" src="app.js"></script>
+  <script type="module" src="app.js?v=20261127b"></script>
 </body>
 </html>

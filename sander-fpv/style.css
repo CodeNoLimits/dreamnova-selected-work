@@ -18,39 +18,47 @@ html, body {
 
 #scene-canvas {
   position: fixed; inset: 0; width: 100%; height: 100%; display: block;
-  cursor: crosshair;
+  cursor: grab;
 }
+#scene-canvas:active { cursor: grabbing; }
 
-/* Headset Simulation Optical Mask — subtle outer peripheral framing keeping center & table wide open */
+/* Headset Simulation Optical Mask — ultra-subtle outer vignette leaving full room wide open */
 #vr-mask {
   position: fixed; inset: 0; pointer-events: none; z-index: 5;
-  transition: opacity 0.3s ease;
-  background: radial-gradient(ellipse 76% 78% at 50% 50%, transparent 62%, rgba(4, 6, 12, 0.38) 84%, rgba(2, 3, 7, 0.86) 100%);
-  box-shadow: inset 0 0 65px rgba(0, 0, 0, 0.72);
+  transition: opacity 0.25s ease;
+  background: radial-gradient(ellipse 84% 84% at 50% 50%, transparent 68%, rgba(4, 6, 12, 0.28) 88%, rgba(2, 3, 7, 0.76) 100%);
+  box-shadow: inset 0 0 54px rgba(0, 0, 0, 0.58);
 }
 #vr-mask.hidden { opacity: 0; }
+
+body.hud-hidden #hud-top,
+body.hud-hidden #hud-bottom,
+body.hud-hidden #help-strip,
+body.hud-hidden #banner-complete {
+  opacity: 0;
+  pointer-events: none;
+}
 
 /* Crosshair Reticle */
 #reticle {
   position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);
-  width: 18px; height: 18px; pointer-events: none; z-index: 8;
-  border: 2px solid rgba(255, 255, 255, 0.48); border-radius: 50%;
+  width: 14px; height: 14px; pointer-events: none; z-index: 8;
+  border: 1.5px solid rgba(255, 255, 255, 0.40); border-radius: 50%;
   transition: transform 0.14s ease, border-color 0.14s ease, box-shadow 0.14s ease;
 }
 #reticle::after {
   content: ""; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-  width: 4px; height: 4px; border-radius: 50%; background: rgba(255, 255, 255, 0.85);
+  width: 3px; height: 3px; border-radius: 50%; background: rgba(255, 255, 255, 0.8);
 }
 #reticle.hot {
   transform: translate(-50%, -50%) scale(1.45);
   border-color: var(--gold-bright);
-  box-shadow: 0 0 18px rgba(240, 196, 101, 0.85);
+  box-shadow: 0 0 14px rgba(240, 196, 101, 0.85);
 }
-#reticle.hot::after { background: var(--gold-bright); }
 
 #hover-hint {
-  position: fixed; left: 50%; top: calc(50% + 26px); transform: translateX(-50%);
-  padding: 5px 12px; border-radius: 999px; font-size: 13px; font-weight: 600;
+  position: fixed; left: 50%; top: calc(50% + 22px); transform: translateX(-50%);
+  padding: 4px 11px; border-radius: 999px; font-size: 12px; font-weight: 600;
   background: rgba(12, 16, 26, 0.86); border: 1px solid var(--border); color: var(--gold-bright);
   pointer-events: none; z-index: 8; opacity: 0; transition: opacity 0.15s ease;
   white-space: nowrap;
@@ -59,73 +67,77 @@ html, body {
 
 /* Top HUD */
 #hud-top {
-  position: fixed; top: 14px; left: 16px; right: 16px; z-index: 12;
-  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
-  pointer-events: none;
+  position: fixed; top: 10px; left: 14px; right: 14px; z-index: 12;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+  pointer-events: none; transition: opacity 0.25s ease;
 }
 .hud-card {
   pointer-events: auto;
-  display: flex; align-items: center; gap: 12px;
-  padding: 10px 16px; border-radius: 14px;
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 13px; border-radius: 12px;
   background: var(--panel); border: 1px solid var(--border);
   backdrop-filter: blur(12px);
 }
-.brand { font-size: 14px; font-weight: 700; color: var(--gold-bright); letter-spacing: 0.3px; }
-.sub { font-size: 12px; color: var(--muted); }
+.brand { font-size: 13px; font-weight: 700; color: var(--gold-bright); letter-spacing: 0.2px; }
+.sub { font-size: 11px; color: var(--muted); }
 
-.progress-dots { display: flex; align-items: center; gap: 6px; }
+.progress-dots { display: flex; align-items: center; gap: 5px; }
 .dot {
-  width: 11px; height: 11px; border-radius: 50%;
-  background: rgba(255, 255, 255, 0.14); border: 1px solid rgba(240, 196, 101, 0.4);
+  width: 9px; height: 9px; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16); border: 1px solid rgba(240, 196, 101, 0.4);
   transition: all 0.25s ease;
 }
-.dot.shamash { width: 13px; height: 13px; border-color: var(--gold); margin-inline: 4px; }
+.dot.shamash { width: 11px; height: 11px; border-color: var(--gold); margin-inline: 3px; }
 .dot.lit {
   background: radial-gradient(circle, #fff8d6 15%, #ffae34 65%, #d95d00 100%);
   border-color: #fff2b2;
-  box-shadow: 0 0 12px rgba(255, 180, 60, 0.9);
+  box-shadow: 0 0 10px rgba(255, 180, 60, 0.9);
 }
 
-/* Bottom Controls — ultra-compact single strip so table, menorah and FPV hand stay unobstructed */
+/* Slim Single-Row Bottom Strip (never overlaps center table!) */
 #hud-bottom {
   position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); z-index: 12;
-  display: flex; flex-wrap: nowrap; justify-content: center; align-items: center; gap: 6px;
-  max-width: 97vw; overflow-x: auto; padding: 7px 10px; border-radius: 14px;
+  display: flex; flex-wrap: nowrap; align-items: center; gap: 5px;
+  max-width: 98vw; overflow-x: auto; scrollbar-width: none;
+  padding: 6px 9px; border-radius: 13px;
   background: var(--panel); border: 1px solid var(--border); backdrop-filter: blur(12px);
+  transition: opacity 0.25s ease;
 }
+#hud-bottom::-webkit-scrollbar { display: none; }
+
 button.ctrl {
-  appearance: none; border: 1px solid rgba(240, 196, 101, 0.38);
+  appearance: none; border: 1px solid rgba(240, 196, 101, 0.34);
   background: rgba(255, 255, 255, 0.06); color: var(--text);
-  padding: 6px 10px; border-radius: 9px; font-size: 12px; font-weight: 600;
-  cursor: pointer; transition: all 0.16s ease; white-space: nowrap;
+  padding: 5px 9px; border-radius: 8px; font-size: 11.5px; font-weight: 600;
+  cursor: pointer; transition: all 0.15s ease; white-space: nowrap; flex-shrink: 0;
 }
-button.ctrl:hover { background: rgba(240, 196, 101, 0.18); border-color: var(--gold); }
+button.ctrl:hover { background: rgba(240, 196, 101, 0.20); border-color: var(--gold); }
 button.ctrl.active {
   background: linear-gradient(135deg, rgba(240, 196, 101, 0.34), rgba(212, 138, 42, 0.24));
   border-color: var(--gold-bright); color: var(--gold-bright);
 }
-button.ctrl.primary {
+button.ctrl.primary.active, button.ctrl.primary {
   background: linear-gradient(135deg, #f0c465, #d69128);
   color: #161006; border-color: #ffe39c;
 }
 
 #help-strip {
   position: fixed; bottom: 52px; left: 50%; transform: translateX(-50%); z-index: 11;
-  padding: 4px 12px; border-radius: 999px; font-size: 11px; color: var(--muted);
-  background: rgba(8, 11, 18, 0.72); border: 1px solid rgba(255, 255, 255, 0.08);
-  pointer-events: none; text-align: center; max-width: 92vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  padding: 3px 11px; border-radius: 999px; font-size: 10.5px; color: var(--muted);
+  background: rgba(8, 11, 18, 0.70); border: 1px solid rgba(255, 255, 255, 0.08);
+  pointer-events: none; text-align: center; max-width: 94vw;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
 #banner-complete {
-  position: fixed; top: 68px; left: 50%; transform: translateX(-50%); z-index: 13;
-  padding: 8px 18px; border-radius: 999px; font-size: 13px; font-weight: 700;
-  background: linear-gradient(135deg, rgba(240, 196, 101, 0.96), rgba(218, 134, 34, 0.96));
-  color: #160f04; box-shadow: 0 8px 32px rgba(240, 180, 60, 0.45);
-  opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+  position: fixed; top: 58px; left: 50%; transform: translateX(-50%); z-index: 13;
+  padding: 6px 16px; border-radius: 999px; font-size: 12.5px; font-weight: 700;
+  background: linear-gradient(135deg, rgba(240, 196, 101, 0.94), rgba(218, 134, 34, 0.94));
+  color: #160f04; box-shadow: 0 6px 24px rgba(240, 180, 60, 0.42);
+  opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
 }
 #banner-complete.visible { opacity: 1; }
 
-/* Loading Screen */
 #loader {
   position: fixed; inset: 0; z-index: 30;
   background: radial-gradient(circle at center, #141928 0%, #07090f 75%);
@@ -134,25 +146,23 @@ button.ctrl.primary {
 }
 #loader.done { opacity: 0; pointer-events: none; }
 .spinner {
-  width: 46px; height: 46px; border-radius: 50%;
+  width: 44px; height: 44px; border-radius: 50%;
   border: 3px solid rgba(240, 196, 101, 0.2); border-top-color: var(--gold);
   animation: spin 0.9s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-#loader-txt { font-size: 14px; color: var(--gold-bright); font-weight: 600; }
+#loader-txt { font-size: 13.5px; color: var(--gold-bright); font-weight: 600; }
 
-/* Three.js VRButton override */
 #VRButton {
-  position: static !important; width: auto !important;
+  position: static !important; width: auto !important; flex-shrink: 0;
   background: linear-gradient(135deg, #273759, #182338) !important;
   border: 1px solid rgba(130, 185, 255, 0.55) !important;
-  color: #e4f0ff !important; border-radius: 10px !important;
-  padding: 8px 13px !important; font-size: 13px !important; font-weight: 600 !important;
-  opacity: 1 !important;
+  color: #e4f0ff !important; border-radius: 8px !important;
+  padding: 5px 10px !important; font-size: 11.5px !important; font-weight: 600 !important;
+  opacity: 1 !important; white-space: nowrap !important;
 }
 
 @media (max-width: 720px) {
   #help-strip { display: none; }
-  .hud-card { padding: 8px 11px; }
-  button.ctrl { padding: 7px 10px; font-size: 12px; }
+  .hud-card { padding: 6px 10px; }
 }
