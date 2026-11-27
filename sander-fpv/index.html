@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Simulateur VR Première Personne — Allumage de la Hanoukkia 3D</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.169.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.169.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <canvas id="scene-canvas"></canvas>
+  <div id="vr-mask"></div>
+  <div id="reticle"></div>
+  <div id="hover-hint"></div>
+  <div id="banner-complete">✨ 8/8 Lumières allumées !</div>
+
+  <div id="loader">
+    <div class="spinner"></div>
+    <div id="loader-txt">Chargement de la scène VR PBR 3D…</div>
+  </div>
+
+  <div id="hud-top">
+    <div class="hud-card">
+      <div>
+        <div class="brand" id="ui-title">Simulation Casque VR — Première Personne</div>
+        <div class="sub" id="ui-sub">Tenez le Shamash et allumez la hanoukkia · Bougez la souris et cliquez sur chaque mèche</div>
+      </div>
+    </div>
+    <div class="hud-card">
+      <span class="sub" id="ui-count-label">Lumières :</span>
+      <strong id="ui-count" style="color:var(--gold-bright)">0 / 8</strong>
+      <div class="progress-dots" id="progress-dots"></div>
+    </div>
+  </div>
+
+  <div id="help-strip">
+    Glisser ou bouger la souris pour regarder · WASD / Flèches pour s'approcher · Clic ou Espace pour allumer une mèche · Clic sur une toupie pour la faire tourner
+  </div>
+
+  <div id="hud-bottom">
+    <button class="ctrl primary" id="btn-ignite-next">🔥 Allumer la mèche suivante</button>
+    <button class="ctrl" id="btn-shamash">🕯️ Reposer le Shamash</button>
+    <button class="ctrl" id="btn-reset">↺ Rallumer (Reset)</button>
+    <button class="ctrl active" id="btn-vr-mask">🥽 Casque VR : ON</button>
+    <button class="ctrl" id="btn-audio">🔊 Audio : OFF</button>
+    <button class="ctrl" id="btn-lang">עברית / FR</button>
+    <div id="vr-btn-slot"></div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
