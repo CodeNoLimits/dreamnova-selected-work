@@ -3,14 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Expérience 3D Immersive — Hanoukkia Photoréaliste Première Personne &amp; WebXR</title>
+  <title>Expérience Cinéma 3D Immersive — Jérusalem &amp; WebXR</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><text y='52' font-size='52'>🕎</text></svg>">
-  <link rel="stylesheet" href="style.css?v=20261127b">
+  <link rel="stylesheet" href="style.css?v=20261127d">
   <script type="importmap">
     {
       "imports": {
-        "three": "https://unpkg.com/three@0.169.0/build/three.module.js",
-        "three/addons/": "https://unpkg.com/three@0.169.0/examples/jsm/"
+        "three": "https://esm.sh/three@0.169.0",
+        "three/addons/": "https://esm.sh/three@0.169.0/examples/jsm/",
+        "postprocessing": "https://esm.sh/postprocessing@6.36.6?deps=three@0.169.0",
+        "n8ao": "https://esm.sh/n8ao@1.9.0?deps=three@0.169.0,postprocessing@6.36.6"
       }
     }
   </script>
@@ -24,13 +26,13 @@
 
   <div id="loader">
     <div class="spinner"></div>
-    <div id="loader-txt">Chargement de la scène 3D PBR HDR…</div>
+    <div id="loader-txt">Chargement de la scène Cinéma 3D Cycles &amp; PBR HDR…</div>
   </div>
 
   <div id="hud-top">
     <div class="hud-card">
       <div>
-        <div class="brand" id="ui-title">Hanoukkia 3D Première Personne — Simulation VR</div>
+        <div class="brand" id="ui-title">Hanoukkia Cinéma 3D — Simulation VR Jérusalem</div>
         <div class="sub" id="ui-sub">Déplacez-vous en 3D (WASD / souris) · Regardez sous tous les angles</div>
       </div>
     </div>
@@ -42,7 +44,7 @@
   </div>
 
   <div id="help-strip">
-    Glisser pour regarder 360° · WASD / Flèches pour marcher · Toupie : clic pour tourner · H : masquer/afficher l'interface
+    Glisser pour regarder 360° · WASD pour marcher · Toupie : clic · E : Soufganiya · B : Siddour · H : masquer/afficher l'interface
   </div>
 
   <div id="hud-bottom">
@@ -53,12 +55,14 @@
     <button class="ctrl" id="btn-cam-window">🪟 Fenêtre</button>
     <button class="ctrl" id="btn-replay">🎬 Rejouer</button>
     <button class="ctrl" id="btn-ignite-next" style="display:none">🔥 Allumer</button>
+    <button class="ctrl" id="btn-eat-sufganiya">🍩 Soufganiya</button>
+    <button class="ctrl" id="btn-open-siddur">📖 Siddour</button>
     <button class="ctrl active" id="btn-vr-mask">🥽 Casque VR : ON</button>
     <button class="ctrl" id="btn-audio">🔇 Audio : OFF</button>
     <button class="ctrl" id="btn-lang">עברית / FR</button>
     <div id="vr-btn-slot"></div>
   </div>
 
-  <script type="module" src="app.js?v=20261127c"></script>
+  <script type="module" src="app.js?v=20261127d"></script>
 </body>
 </html>

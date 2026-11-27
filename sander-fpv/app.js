@@ -1,18 +1,26 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { VRButton } from 'three/addons/webxr/VRButton.js';
+import {
+  EffectComposer,
+  RenderPass,
+  EffectPass,
+  BloomEffect,
+  NoiseEffect,
+  VignetteEffect,
+  ToneMappingEffect,
+  ToneMappingMode,
+  BlendFunction
+} from 'postprocessing';
+import { N8AOPostPass } from 'n8ao';
 
-const candleDisplayNum = (idx) => (idx === 4 ? 'Shamash' : (idx > 4 ? (9 - idx) : (8 - idx)));
+const candleDisplayNum = (widx) => (widx === 4 ? 0 : widx < 4 ? 8 - widx : 9 - widx);
 
 const I18N = {
   fr: {
     dir: 'ltr',
-    title: 'Hanoukkia 3D Première Personne — Simulation VR',
+    title: 'Hanoukkia Cinéma 3D — Simulation VR Jérusalem',
     sub: 'Déplacez-vous en 3D (WASD / souris) · Regardez sous tous les angles',
     countLabel: 'Lumières :',
     modeScene: '🧑 Scène Personnage',
@@ -22,18 +30,24 @@ const I18N = {
     camWindow: '🪟 Fenêtre',
     replay: '🎬 Rejouer',
     igniteNext: '🔥 Allumer',
+    eatBtnIdle: '🍩 Soufganiya',
+    eatBtnBite: (b) => `😋 Croquer (${b}/3)`,
+    siddurClosed: '📖 Siddour',
+    siddurOpen: '📖 Fermer / Tourner',
     maskOn: '🥽 Casque VR : ON',
     maskOff: '🖥️ Casque VR : OFF',
     audioOn: '🔊 Audio : ON',
     audioOff: '🔇 Audio : OFF',
     complete: '✨ 8/8 Lumières allumées !',
-    hintWick: (n) => (n === 4 ? 'Cliquer pour allumer le Shamash' : `Cliquer pour allumer la bougie ${candleDisplayNum(n)}`),
+    hintWick: (n) => (n === 4 ? 'Cliquer pour allumer le Chamach' : `Cliquer pour allumer la lumière n°${candleDisplayNum(n)}`),
     hintDreidel: 'Cliquer pour faire tourner la toupie',
-    help: "Glisser pour regarder 360° · WASD / Flèches pour marcher · Toupie : clic pour tourner · H : masquer/afficher l'interface"
+    hintPlate: 'Cliquer pour prendre et croquer une soufganiya',
+    hintSiddur: (open) => (open ? 'Cliquer pour tourner la page du Siddour' : 'Cliquer pour ouvrir le Siddour'),
+    help: "Glisser pour regarder 360° · WASD pour marcher · Toupie : clic · E : Soufganiya · B : Siddour · H : masquer/afficher l'interface"
   },
   he: {
     dir: 'rtl',
-    title: 'הדלקת חנוכייה בתלת-ממד בגוף ראשון — הדמיית VR',
+    title: 'חוויית הדלקת חנוכייה בתלת-ממד — הדמיית VR בירושלים',
     sub: 'תנועה חופשית בחדר (WASD / עכבר) · צפייה מכל זווית',
     countLabel: 'נרות:',
     modeScene: '🧑 הדגמה עם דמות',
@@ -43,6 +57,10 @@ const I18N = {
     camWindow: '🪟 ליד החלון',
     replay: '🎬 הפעלה מחדש',
     igniteNext: '🔥 הדלקת הנר הבא',
+    eatBtnIdle: '🍩 סופגנייה',
+    eatBtnBite: (b) => `😋 ביס (${b}/3)`,
+    siddurClosed: '📖 סידור',
+    siddurOpen: '📖 דפדוף / סגירה',
     maskOn: '🥽 מצב משקפי VR: פעיל',
     maskOff: '🖥️ מצב משקפי VR: כבוי',
     audioOn: '🔊 שמע: פעיל',
@@ -50,25 +68,24 @@ const I18N = {
     complete: '✨ 8/8 נרות דולקים!',
     hintWick: (n) => (n === 4 ? 'לחצו להדלקת השמש' : `לחצו להדלקת נר ${candleDisplayNum(n)}`),
     hintDreidel: 'לחצו כדי לסובב את הסביבון',
-    help: 'גרירת עכבר למבט 360° · חיצים / WASD להליכה · לחיצה על הסביבון לסיבוב · מקש H להסתרת התפריט'
+    hintPlate: 'לחצו כדי לקחת ולאכול סופגנייה',
+    hintSiddur: (open) => (open ? 'לחצו כדי להפוך דף בסידור' : 'לחצו כדי לפתוח את הסידור'),
+    help: 'גרירת עכבר למבט 360° · חיצים / WASD להליכה · לחיצה על הסביבון לסיבוב · מקש E לסופגנייה · מקש B לסידור · מקש H להסתרת התפריט'
   }
 };
 
 let lang = 'fr';
-let playMode = 'character'; // 'character' | 'self'
+let playMode = 'character';
 let manifest = null;
 let tableTopY = 0.5429;
-const TABLE_POS = new THREE.Vector3(0, 0, -1.78);
-const MENORAH_REST_POS = new THREE.Vector3(0, 0.5429, -1.90);
-const MENORAH_WINDOW_POS = new THREE.Vector3(0, 0.94, -3.72);
 
-// Renderer + PostProcessing Bloom
+// Renderer (AgX handled inside pmndrs EffectPass for desktop; native AgX in WebXR)
 const canvas = document.getElementById('scene-canvas');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.12;
+renderer.toneMapping = THREE.NoToneMapping;
+renderer.toneMappingExposure = 1.08;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.xr.enabled = true;
@@ -76,20 +93,22 @@ renderer.xr.enabled = true;
 document.getElementById('vr-btn-slot').appendChild(VRButton.createButton(renderer));
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x060913);
-scene.fog = new THREE.FogExp2(0x070a15, 0.022);
+scene.background = new THREE.Color(0x050812);
+scene.fog = new THREE.FogExp2(0x060a16, 0.017);
 
-// Rig & Camera (Desktop FPS + WebXR 6DoF)
+// Rig & Smooth Cinema Camera (Desktop FPS + WebXR 6DoF)
 const playerRig = new THREE.Group();
 playerRig.position.set(0, 0, -0.78);
 scene.add(playerRig);
 
-const camera = new THREE.PerspectiveCamera(62, window.innerWidth / window.innerHeight, 0.04, 65);
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.04, 65);
 camera.position.set(0, 1.40, 0);
 playerRig.add(camera);
 
 let yaw = 0.0;
-let pitch = -0.26;
+let pitch = -0.24;
+let camTween = null;
+
 function applyCameraRotation() {
   if (!renderer.xr.isPresenting) {
     camera.rotation.order = 'YXZ';
@@ -99,14 +118,47 @@ function applyCameraRotation() {
 }
 applyCameraRotation();
 
-// Bloom Composer for desktop cinematic glow
-const composer = new EffectComposer(renderer);
-composer.addPass(new RenderPass(scene, camera));
-const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.34, 0.48, 0.82);
-composer.addPass(bloomPass);
-composer.addPass(new OutputPass());
+// Cinema Postprocessing Pipeline: RenderPass -> N8AO Contact AO -> Bloom + 35mm Grain + Vignette + AgX
+const composer = new EffectComposer(renderer, { frameBufferType: THREE.HalfFloatType });
+const renderPass = new RenderPass(scene, camera);
+composer.addPass(renderPass);
 
-// HDRI Environment IBL for metal/crystal/silver reflections
+let n8aoPass = null;
+try {
+  n8aoPass = new N8AOPostPass(scene, camera, window.innerWidth, window.innerHeight);
+  n8aoPass.configuration.aoRadius = 0.48;
+  n8aoPass.configuration.distanceFalloff = 0.9;
+  n8aoPass.configuration.intensity = 1.85;
+  n8aoPass.configuration.halfRes = true;
+  composer.addPass(n8aoPass);
+} catch (err) {
+  console.warn('N8AO disabled gracefully:', err);
+}
+
+const bloomEffect = new BloomEffect({
+  blendFunction: BlendFunction.ADD,
+  mipmapBlur: true,
+  luminanceThreshold: 0.86,
+  luminanceSmoothing: 0.28,
+  intensity: 0.44
+});
+const noiseEffect = new NoiseEffect({
+  blendFunction: BlendFunction.COLOR_DODGE,
+  opacity: 0.024
+});
+const vignetteEffect = new VignetteEffect({
+  eskil: false,
+  offset: 0.34,
+  darkness: 0.42
+});
+const toneMappingEffect = new ToneMappingEffect({
+  mode: ToneMappingMode.AGX
+});
+
+const cinematicPass = new EffectPass(camera, bloomEffect, noiseEffect, vignetteEffect, toneMappingEffect);
+composer.addPass(cinematicPass);
+
+// HDRI Environment IBL
 const pmremGen = new THREE.PMREMGenerator(renderer);
 pmremGen.compileEquirectangularShader();
 new RGBELoader().load(
@@ -114,21 +166,19 @@ new RGBELoader().load(
   (hdrTex) => {
     const envRT = pmremGen.fromEquirectangular(hdrTex);
     scene.environment = envRT.texture;
-    scene.environmentIntensity = 0.90;
+    scene.environmentIntensity = 0.68;
     hdrTex.dispose();
     pmremGen.dispose();
   },
   undefined,
-  () => {
-    pmremGen.dispose();
-  }
+  () => { pmremGen.dispose(); }
 );
 
-// Lights with Soft Shadows
-const hemi = new THREE.HemisphereLight(0x8bb0f2, 0x3b2816, 0.55);
+// Cinema Lighting Complementing Cycles Lightmap GI
+const hemi = new THREE.HemisphereLight(0x88b0f2, 0x3b2715, 0.48);
 scene.add(hemi);
 
-const moonLight = new THREE.DirectionalLight(0x8bb2ff, 1.55);
+const moonLight = new THREE.DirectionalLight(0x8bb4ff, 1.45);
 moonLight.position.set(0.6, 3.8, -6.5);
 moonLight.target.position.set(0, 0.8, -1.7);
 moonLight.castShadow = true;
@@ -142,43 +192,38 @@ moonLight.shadow.camera.bottom = -1.5;
 moonLight.shadow.bias = -0.0005;
 scene.add(moonLight, moonLight.target);
 
-const chandelierLight = new THREE.PointLight(0xffbe73, 4.2, 12, 1.4);
+const chandelierLight = new THREE.PointLight(0xffbc6e, 3.6, 12, 1.4);
 chandelierLight.position.set(0, 3.15, -0.25);
 chandelierLight.castShadow = true;
 chandelierLight.shadow.mapSize.set(512, 512);
 chandelierLight.shadow.bias = -0.001;
 scene.add(chandelierLight);
 
-const personKeyLight = new THREE.SpotLight(0xffcb88, 3.4, 8, Math.PI / 4, 0.55, 1.3);
+const personKeyLight = new THREE.SpotLight(0xffcb86, 3.2, 8, Math.PI / 4, 0.55, 1.3);
 personKeyLight.position.set(0.85, 2.35, -1.15);
-personKeyLight.target.position.set(0.38, 1.35, -2.35);
+personKeyLight.target.position.set(0.24, 1.35, -2.30);
 personKeyLight.castShadow = true;
 personKeyLight.shadow.mapSize.set(512, 512);
 scene.add(personKeyLight, personKeyLight.target);
 
-const balconyMoon = new THREE.PointLight(0x7ca8ff, 3.5, 9, 1.5);
-balconyMoon.position.set(0, 2.8, -5.0);
-scene.add(balconyMoon);
+const balconyLanternLight = new THREE.PointLight(0xffb55c, 2.8, 7.5, 1.6);
+balconyLanternLight.position.set(1.35, 2.55, -4.85);
+scene.add(balconyLanternLight);
 
-// Textures & PBR Materials
-const texLoader = new THREE.TextureLoader();
-function loadTex(file, repX = 1, repY = 1, srgb = true) {
-  const t = texLoader.load(`assets/textures/${file}`);
-  t.wrapS = THREE.RepeatWrapping;
-  t.wrapT = THREE.RepeatWrapping;
-  t.repeat.set(repX, repY);
-  if (srgb) t.colorSpace = THREE.SRGBColorSpace;
-  return t;
-}
+const siddurSpotLight = new THREE.SpotLight(0xffe0a8, 1.8, 3.5, Math.PI / 5, 0.65, 1.2);
+siddurSpotLight.position.set(-0.46, 1.45, -1.35);
+siddurSpotLight.target.position.set(-0.46, 0.56, -1.68);
+scene.add(siddurSpotLight, siddurSpotLight.target);
 
-function createRadialGlowTexture() {
+// Procedural Glow & Beam Textures (zero square corners)
+function createRadialGlowTexture(rgbInner = '255,244,195', rgbMid = '255,165,55') {
   const c = document.createElement('canvas');
   c.width = 64; c.height = 64;
   const ctx = c.getContext('2d');
   const g = ctx.createRadialGradient(32, 32, 2, 32, 32, 31);
-  g.addColorStop(0.0, 'rgba(255,244,195,0.95)');
-  g.addColorStop(0.35, 'rgba(255,165,55,0.42)');
-  g.addColorStop(1.0, 'rgba(255,110,15,0)');
+  g.addColorStop(0.0, `rgba(${rgbInner},0.96)`);
+  g.addColorStop(0.35, `rgba(${rgbMid},0.42)`);
+  g.addColorStop(1.0, `rgba(${rgbMid},0)`);
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, 64, 64);
   const tex = new THREE.CanvasTexture(c);
@@ -186,322 +231,130 @@ function createRadialGlowTexture() {
   return tex;
 }
 const GLOW_TEX = createRadialGlowTexture();
+const SUGAR_TEX = createRadialGlowTexture('255,255,255', '250,245,238');
 
-function buildSalonAnd3DJerusalemExterior() {
-  const stoneMat = new THREE.MeshStandardMaterial({
-    map: loadTex('sandstone_diff.jpg', 3.5, 2.0, true),
-    normalMap: loadTex('sandstone_nor.jpg', 3.5, 2.0, false),
-    roughnessMap: loadTex('sandstone_rough.jpg', 3.5, 2.0, false),
-    roughness: 0.90, metalness: 0.02, color: 0xe6d4b8
-  });
-  const floorMat = new THREE.MeshStandardMaterial({
-    map: loadTex('floor_diff.jpg', 4, 4, true),
-    normalMap: loadTex('floor_nor.jpg', 4, 4, false),
-    roughnessMap: loadTex('floor_rough.jpg', 4, 4, false),
-    roughness: 0.78, color: 0xe4d4bf
-  });
-  const walnutMat = new THREE.MeshStandardMaterial({
-    map: loadTex('walnut_diff.jpg', 2, 1, true),
-    normalMap: loadTex('walnut_nor.jpg', 2, 1, false),
-    roughness: 0.48
-  });
-  const rugMat = new THREE.MeshStandardMaterial({ map: loadTex('persian_rug_pbr.jpg', 1, 1, true), roughness: 0.92 });
-  const velvetMat = new THREE.MeshStandardMaterial({
-    color: 0x1c2d57,
-    roughness: 0.72,
-    metalness: 0.04,
-    sheen: 0.9,
-    sheenColor: new THREE.Color(0x6d8fd1)
-  });
-  const brassMat = new THREE.MeshStandardMaterial({ color: 0xd9a23a, metalness: 0.94, roughness: 0.20 });
-  const casementWoodMat = new THREE.MeshStandardMaterial({
-    map: loadTex('walnut_diff.jpg', 1, 1, true),
-    normalMap: loadTex('walnut_nor.jpg', 1, 1, false),
-    color: 0x8f623d,
-    roughness: 0.46
-  });
-  const glassPaneMat = new THREE.MeshPhysicalMaterial({
-    color: 0xdbe9ff, transparent: true, opacity: 0.12, roughness: 0.05, metalness: 0.05, side: THREE.DoubleSide
-  });
+function createVolumetricMoonShafts() {
+  const c = document.createElement('canvas');
+  c.width = 128; c.height = 256;
+  const ctx = c.getContext('2d');
+  const gx = ctx.createLinearGradient(0, 0, 128, 0);
+  gx.addColorStop(0, 'rgba(130,175,255,0)');
+  gx.addColorStop(0.5, 'rgba(135,180,255,0.45)');
+  gx.addColorStop(1, 'rgba(130,175,255,0)');
+  ctx.fillStyle = gx;
+  ctx.fillRect(0, 0, 128, 256);
+  const gy = ctx.createLinearGradient(0, 0, 0, 256);
+  gy.addColorStop(0, 'rgba(255,255,255,0.95)');
+  gy.addColorStop(0.75, 'rgba(255,255,255,0.22)');
+  gy.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.globalCompositeOperation = 'destination-in';
+  ctx.fillStyle = gy;
+  ctx.fillRect(0, 0, 128, 256);
+  const beamTex = new THREE.CanvasTexture(c);
+  beamTex.colorSpace = THREE.SRGBColorSpace;
 
-  // Floor & Rug (receive shadows!)
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(8.2, 8.2), floorMat);
-  floor.rotation.x = -Math.PI / 2;
-  floor.receiveShadow = true;
-  scene.add(floor);
-
-  const rug = new THREE.Mesh(new THREE.PlaneGeometry(3.35, 3.35), rugMat);
-  rug.rotation.x = -Math.PI / 2;
-  rug.position.set(0, 0.006, -1.45);
-  rug.receiveShadow = true;
-  scene.add(rug);
-
-  const addBox = (w, h, d, x, y, z, mat, cast = false) => {
-    const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
-    m.position.set(x, y, z);
-    m.receiveShadow = true;
-    m.castShadow = cast;
-    scene.add(m);
-    return m;
-  };
-
-  // Salon Walls & Barrel Vault Ceiling
-  addBox(8.2, 4.4, 0.35, 0, 2.2, 3.85, stoneMat);
-  addBox(0.35, 3.2, 8.2, -3.85, 1.6, 0, stoneMat);
-  addBox(0.35, 3.2, 8.2, 3.85, 1.6, 0, stoneMat);
-  for (const yr of [-3.55, -1.2, 1.2, 3.55]) {
-    addBox(0.38, 2.85, 0.34, -3.66, 1.42, yr, stoneMat, true);
-    addBox(0.38, 2.85, 0.34, 3.66, 1.42, yr, stoneMat, true);
-  }
-
-  // Front Wall framing true deep Arched Window opening (z = -3.88, depth = 0.56 m!)
-  addBox(2.84, 4.4, 0.58, -2.60, 2.2, -3.92, stoneMat);
-  addBox(2.84, 4.4, 0.58, 2.60, 2.2, -3.92, stoneMat);
-  addBox(2.44, 0.90, 0.58, 0, 0.45, -3.92, stoneMat);
-  // Wide Walnut Windowsill where Menorah can be placed!
-  addBox(2.58, 0.08, 0.68, 0, 0.90, -3.84, walnutMat, true);
-  addBox(2.60, 1.15, 0.58, 0, 3.92, -3.92, stoneMat);
-
-  // Carved Stone Arch Voussoirs
-  for (let k = 0; k < 15; k++) {
-    const th = Math.PI * (k + 0.5) / 15.0;
-    const v = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.24, 0.62), stoneMat);
-    v.position.set(1.22 * Math.cos(th), 2.22 + 1.22 * Math.sin(th), -3.92);
-    v.rotation.z = th - Math.PI / 2;
-    v.castShadow = true;
-    v.receiveShadow = true;
-    scene.add(v);
-  }
-
-  // Hinged Casement Window Leaves swung open outward with transparent glass & perimeter walnut frames
-  for (const side of [-1, 1]) {
-    const hinge = new THREE.Group();
-    hinge.position.set(side * 1.15, 2.04, -4.18);
-    hinge.rotation.y = side * -1.18; // swung open outward over 3D balcony
-    const cx = -side * 0.45;
-    const stileIn = new THREE.Mesh(new THREE.BoxGeometry(0.055, 2.02, 0.05), casementWoodMat);
-    stileIn.position.x = -side * 0.025;
-    const stileOut = new THREE.Mesh(new THREE.BoxGeometry(0.055, 2.02, 0.05), casementWoodMat);
-    stileOut.position.x = -side * 0.875;
-    const railTop = new THREE.Mesh(new THREE.BoxGeometry(0.90, 0.06, 0.05), casementWoodMat);
-    railTop.position.set(cx, 0.98, 0);
-    const railMid = new THREE.Mesh(new THREE.BoxGeometry(0.86, 0.04, 0.045), casementWoodMat);
-    railMid.position.set(cx, 0.05, 0);
-    const railBot = new THREE.Mesh(new THREE.BoxGeometry(0.90, 0.06, 0.05), casementWoodMat);
-    railBot.position.set(cx, -0.98, 0);
-    const glass = new THREE.Mesh(new THREE.PlaneGeometry(0.82, 1.90), glassPaneMat);
-    glass.position.x = cx;
-    hinge.add(stileIn, stileOut, railTop, railMid, railBot, glass);
-    scene.add(hinge);
-  }
-
-  // Barrel Vault Ceiling
-  const vault = new THREE.Mesh(
-    new THREE.CylinderGeometry(3.88, 3.88, 8.0, 28, 1, true, 0, Math.PI),
-    new THREE.MeshStandardMaterial({
-      map: loadTex('sandstone_diff.jpg', 3.5, 2.0, true),
-      normalMap: loadTex('sandstone_nor.jpg', 3.5, 2.0, false),
-      roughness: 0.9, side: THREE.BackSide, color: 0xe6d3b6
-    })
-  );
-  vault.rotation.x = Math.PI / 2;
-  vault.rotation.z = Math.PI / 2;
-  vault.scale.set(1.0, 1.0, 0.44);
-  vault.position.set(0, 2.75, 0);
-  scene.add(vault);
-
-  // Velvet Curtains + Brass Rod (drawn wide beside the stone arch so window view stays open)
-  const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 3.4, 14), brassMat);
-  rod.rotation.z = Math.PI / 2;
-  rod.position.set(0, 3.50, -3.56);
-  scene.add(rod);
-  for (const bx of [-1.42, 1.42]) {
-    for (let i = 0; i < 4; i++) {
-      const c = new THREE.Mesh(new THREE.CylinderGeometry(0.058, 0.066, 2.62, 12), velvetMat);
-      c.position.set(bx - 0.11 + i * 0.075, 2.18, -3.56 - (i % 2) * 0.025);
-      c.castShadow = true;
-      c.receiveShadow = true;
-      scene.add(c);
-    }
-  }
-
-  // Oil Painting on Right Wall (matching right console)
-  const pFrame = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.88, 1.18), brassMat);
-  pFrame.position.set(3.64, 1.80, 0);
-  scene.add(pFrame);
-  const pCanvas = new THREE.Mesh(
-    new THREE.PlaneGeometry(1.04, 0.74),
-    new THREE.MeshStandardMaterial({ map: loadTex('jerusalem_painting_oil.jpg', 1, 1, true), roughness: 0.45 })
-  );
-  pCanvas.rotation.y = -Math.PI / 2;
-  pCanvas.position.set(3.61, 1.80, 0);
-  scene.add(pCanvas);
-
-  // TRUE 3D EXTERIOR BALCONY + LAYERED 3D OLD CITY OF JERUSALEM (Real Parallax, ZERO flat glued window!)
-  addBox(5.2, 0.16, 1.6, 0, 0.76, -4.95, stoneMat); // Balcony terrace floor
-  addBox(5.2, 0.14, 0.24, 0, 1.38, -5.65, stoneMat); // Top stone balustrade rail
-  addBox(5.2, 0.12, 0.26, 0, 0.88, -5.65, stoneMat); // Bottom plinth
-  for (let bx = -2.3; bx <= 2.31; bx += 0.38) {
-    addBox(0.11, 0.44, 0.11, bx, 1.13, -5.65, stoneMat, true);
-  }
-
-  // Multi-depth 3D Jerusalem Stone Houses, Arches, Cypresses, Warm Lit Windows & Dome
-  const warmWinMat = new THREE.MeshBasicMaterial({ color: 0xffc670 });
-  const foliageMat = new THREE.MeshStandardMaterial({ color: 0x162619, roughness: 0.92 });
-  const buildings = [
-    { x: -3.2, y: 0.6, z: -8.6, w: 2.2, h: 2.8, d: 2.0, dome: false },
-    { x: -1.1, y: 0.4, z: -9.8, w: 1.9, h: 3.1, d: 2.2, dome: true },
-    { x: 1.4, y: 0.5, z: -8.9, w: 2.1, h: 2.7, d: 1.9, dome: false },
-    { x: 3.4, y: 0.7, z: -9.5, w: 2.3, h: 3.3, d: 2.1, dome: false },
-    { x: -2.2, y: 1.0, z: -13.5, w: 2.8, h: 3.9, d: 2.4, dome: true },
-    { x: 0.4, y: 0.9, z: -14.2, w: 3.2, h: 3.6, d: 2.5, dome: false },
-    { x: 2.9, y: 1.1, z: -13.2, w: 2.6, h: 4.1, d: 2.4, dome: true },
-  ];
-  for (const b of buildings) {
-    const bm = new THREE.Mesh(new THREE.BoxGeometry(b.w, b.h, b.d), stoneMat);
-    bm.position.set(b.x, b.y, b.z);
-    scene.add(bm);
-    // Warm lit Old City windows facing camera
-    for (let wx = -0.5; wx <= 0.51; wx += 0.5) {
-      const wm = new THREE.Mesh(new THREE.PlaneGeometry(0.18, 0.28), warmWinMat);
-      wm.position.set(b.x + wx * b.w * 0.45, b.y + b.h * 0.22, b.z + b.d * 0.5 + 0.02);
-      scene.add(wm);
-    }
-    if (b.dome) {
-      const dm = new THREE.Mesh(new THREE.SphereGeometry(b.w * 0.36, 16, 10, 0, Math.PI * 2, 0, Math.PI / 2), stoneMat);
-      dm.position.set(b.x, b.y + b.h * 0.5, b.z);
-      scene.add(dm);
-    }
-  }
-  for (const [cx, cy, cz, ch] of [[-2.0, 1.3, -7.2, 2.2], [2.2, 1.2, -7.4, 2.5], [0.2, 1.1, -11.4, 2.9]]) {
-    const cyMesh = new THREE.Mesh(new THREE.ConeGeometry(0.32, ch, 10), foliageMat);
-    cyMesh.position.set(cx, cy, cz);
-    scene.add(cyMesh);
-  }
-
-  // Far Night Sky Panoramic Cyclorama with soft feathered alpha edge into night sky
-  const skyAlphaCanvas = document.createElement('canvas');
-  skyAlphaCanvas.width = 256; skyAlphaCanvas.height = 128;
-  const sCtx = skyAlphaCanvas.getContext('2d');
-  const hg = sCtx.createLinearGradient(0, 0, 256, 0);
-  hg.addColorStop(0.0, 'black'); hg.addColorStop(0.14, 'white'); hg.addColorStop(0.86, 'white'); hg.addColorStop(1.0, 'black');
-  sCtx.fillStyle = hg; sCtx.fillRect(0, 0, 256, 128);
-  const skyAlphaTex = new THREE.CanvasTexture(skyAlphaCanvas);
-  const skyGeo = new THREE.CylinderGeometry(28, 28, 22, 40, 1, true, Math.PI * 0.52, Math.PI * 0.96);
-  const skyMat = new THREE.MeshBasicMaterial({
-    map: loadTex('jerusalem_night_backdrop.jpg', 1, 1, true),
-    alphaMap: skyAlphaTex,
+  const mat = new THREE.MeshBasicMaterial({
+    map: beamTex,
     transparent: true,
-    side: THREE.BackSide
+    opacity: 0.14,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    side: THREE.DoubleSide
   });
-  const sky = new THREE.Mesh(skyGeo, skyMat);
-  sky.position.set(0, 4.2, -2.0);
-  scene.add(sky);
 
-  // Subtle Floating Warm Embers
-  const emberGeo = new THREE.BufferGeometry();
-  const epos = [];
-  for (let i = 0; i < 55; i++) {
-    epos.push((Math.random() - 0.5) * 5.2, 0.7 + Math.random() * 2.2, -3.5 + Math.random() * 4.0);
+  const shafts = new THREE.Group();
+  for (const [bx, rotZ] of [[-0.25, -0.05], [0.22, 0.04]]) {
+    const p = new THREE.Mesh(new THREE.PlaneGeometry(1.65, 4.4), mat);
+    p.position.set(bx, 1.55, -2.55);
+    p.rotation.set(-0.62, 0, rotZ);
+    shafts.add(p);
   }
-  emberGeo.setAttribute('position', new THREE.Float32BufferAttribute(epos, 3));
-  const embers = new THREE.Points(emberGeo, new THREE.PointsMaterial({ map: GLOW_TEX, color: 0xffcf70, size: 0.04, transparent: true, opacity: 0.55, depthWrite: false, blending: THREE.AdditiveBlending }));
-  scene.add(embers);
-  return embers;
+  scene.add(shafts);
 }
+createVolumetricMoonShafts();
 
-const embers = buildSalonAnd3DJerusalemExterior();
+// Floating Dust Motes in Moonbeams
+const emberGeo = new THREE.BufferGeometry();
+const epos = [];
+for (let i = 0; i < 75; i++) {
+  epos.push((Math.random() - 0.5) * 4.8, 0.65 + Math.random() * 2.3, -3.6 + Math.random() * 4.2);
+}
+emberGeo.setAttribute('position', new THREE.Float32BufferAttribute(epos, 3));
+const embers = new THREE.Points(
+  emberGeo,
+  new THREE.PointsMaterial({
+    map: GLOW_TEX,
+    color: 0xffd58a,
+    size: 0.036,
+    transparent: true,
+    opacity: 0.52,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
+  })
+);
+scene.add(embers);
 
+// Flame Builder & Particle Bursts (Sparks + Powdered Sugar Crumbs)
 function createFlameGroup(withLight = false, scale = 1.0) {
   const g = new THREE.Group();
-  const outerGeo = new THREE.ConeGeometry(0.011 * scale, 0.038 * scale, 12);
-  outerGeo.translate(0, 0.017 * scale, 0);
-  const outer = new THREE.Mesh(outerGeo, new THREE.MeshBasicMaterial({ color: 0xff8c1a, transparent: true, opacity: 0.90 }));
-
-  const coreGeo = new THREE.ConeGeometry(0.006 * scale, 0.024 * scale, 10);
-  coreGeo.translate(0, 0.012 * scale, 0);
-  const core = new THREE.Mesh(coreGeo, new THREE.MeshBasicMaterial({ color: 0xfff7cc }));
-
-  const blueGeo = new THREE.SphereGeometry(0.0055 * scale, 8, 8);
-  blueGeo.translate(0, 0.003 * scale, 0);
-  const blue = new THREE.Mesh(blueGeo, new THREE.MeshBasicMaterial({ color: 0x3b7bff, transparent: true, opacity: 0.65 }));
-
-  const glow = new THREE.Sprite(new THREE.SpriteMaterial({
-    map: GLOW_TEX, color: 0xffbe55, transparent: true, opacity: 0.58, depthWrite: false, blending: THREE.AdditiveBlending
-  }));
-  glow.scale.set(0.085 * scale, 0.105 * scale, 1);
-  glow.position.y = 0.018 * scale;
-
-  g.add(outer, core, blue, glow);
+  const outer = new THREE.Mesh(
+    new THREE.ConeGeometry(0.013 * scale, 0.046 * scale, 12),
+    new THREE.MeshBasicMaterial({ color: 0xff8c1a, transparent: true, opacity: 0.90 })
+  );
+  outer.position.y = 0.023 * scale;
+  const core = new THREE.Mesh(
+    new THREE.ConeGeometry(0.0065 * scale, 0.026 * scale, 10),
+    new THREE.MeshBasicMaterial({ color: 0xfff8dc })
+  );
+  core.position.y = 0.017 * scale;
+  const sprite = new THREE.Sprite(
+    new THREE.SpriteMaterial({
+      map: GLOW_TEX,
+      color: 0xffb84d,
+      transparent: true,
+      opacity: 0.85,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    })
+  );
+  sprite.scale.set(0.11 * scale, 0.14 * scale, 1);
+  sprite.position.y = 0.024 * scale;
+  g.add(outer, core, sprite);
   if (withLight) {
-    const pt = new THREE.PointLight(0xff9c33, 0.95, 3.2, 1.7);
-    pt.position.y = 0.026 * scale;
+    const pt = new THREE.PointLight(0xffa438, 1.05 * scale, 3.0, 2.0);
+    pt.position.set(0, 0.032 * scale, 0);
     g.add(pt);
     g.userData.light = pt;
   }
-  g.userData.phase = Math.random() * Math.PI * 2;
+  g.userData.phase = Math.random() * 6.28;
   return g;
 }
 
 const sparkBursts = [];
-function spawnSparks(worldPos) {
-  const count = 20;
-  const geom = new THREE.BufferGeometry();
-  const arr = new Float32Array(count * 3);
+function spawnBurst(worldPos, tex, count, spread, upVel, size, color) {
+  const geo = new THREE.BufferGeometry();
+  const pos = [];
   const vels = [];
   for (let i = 0; i < count; i++) {
-    arr[i * 3] = worldPos.x;
-    arr[i * 3 + 1] = worldPos.y;
-    arr[i * 3 + 2] = worldPos.z;
-    vels.push(new THREE.Vector3((Math.random() - 0.5) * 0.35, 0.25 + Math.random() * 0.45, (Math.random() - 0.5) * 0.35));
+    pos.push(worldPos.x, worldPos.y, worldPos.z);
+    vels.push(new THREE.Vector3((Math.random() - 0.5) * spread, upVel * (0.4 + Math.random()), (Math.random() - 0.5) * spread));
   }
-  geom.setAttribute('position', new THREE.BufferAttribute(arr, 3));
-  const mat = new THREE.PointsMaterial({ map: GLOW_TEX, color: 0xffd87a, size: 0.032, transparent: true, opacity: 1.0, depthWrite: false, blending: THREE.AdditiveBlending });
-  const pts = new THREE.Points(geom, mat);
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  const pts = new THREE.Points(
+    geo,
+    new THREE.PointsMaterial({
+      map: tex,
+      color,
+      size,
+      transparent: true,
+      opacity: 0.95,
+      depthWrite: false,
+      blending: tex === GLOW_TEX ? THREE.AdditiveBlending : THREE.NormalBlending
+    })
+  );
   scene.add(pts);
-  sparkBursts.push({ pts, vels, life: 0, maxLife: 0.9 });
+  sparkBursts.push({ pts, vels, life: 0, maxLife: 0.85 });
 }
-
-// Audio
-let audioCtx = null;
-const ambientAudio = new Audio('assets/audio/hanukkah_ambient.mp3');
-ambientAudio.loop = true;
-ambientAudio.volume = 0.45;
-let audioEnabled = false;
-
-function playIgniteSound() {
-  if (!audioEnabled) return;
-  try {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-    const t = audioCtx.currentTime;
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(520, t);
-    osc.frequency.exponentialRampToValueAtTime(980, t + 0.14);
-    gain.gain.setValueAtTime(0.08, t);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.26);
-    osc.connect(gain).connect(audioCtx.destination);
-    osc.start(t);
-    osc.stop(t + 0.28);
-  } catch {}
-}
-
-// Scene State
-let menorahGroup = null;
-const wicks = []; // parented INSIDE menorahGroup so they move with the Menorah to the window!
-const dreidels = [];
-let handRoot = null;
-let handFlame = null;
-let handShamashLocalTip = new THREE.Vector3(-0.008, 0.197, -0.1281);
-let personScene = null;
-let personBones = {};
-let personBoneRest = {};
-let personBoneCharRestWorld = {};
-let personIgniteCandle = null;
-let personIgniteFlame = null;
-let sceneTime = 0; // seconds into character narrative (0..26)
 
 function clearSparkBursts() {
   for (let i = sparkBursts.length - 1; i >= 0; i--) {
@@ -510,11 +363,91 @@ function clearSparkBursts() {
   sparkBursts.length = 0;
 }
 
+// Sound Engine (Ambience + Foley SFX)
+let audioEnabled = false;
+let userExplicitlyMuted = false;
+
+const ambientAudio = new Audio('assets/audio/ambient_cinema_jerusalem.mp3');
+ambientAudio.loop = true;
+ambientAudio.volume = 0.28;
+
+const SFX_POOL = {};
+function loadSfx(name, file, vol = 0.55) {
+  const a = new Audio(`assets/audio/${file}`);
+  a.preload = 'auto';
+  a.volume = vol;
+  SFX_POOL[name] = a;
+}
+loadSfx('ignite', 'sfx_ignite.mp3', 0.52);
+loadSfx('bite1', 'sfx_bite_1.mp3', 0.65);
+loadSfx('bite2', 'sfx_bite_2.mp3', 0.65);
+loadSfx('bite3', 'sfx_bite_3.mp3', 0.68);
+loadSfx('bookOpen', 'sfx_book_open.mp3', 0.58);
+loadSfx('pageTurn', 'sfx_page_turn.mp3', 0.56);
+loadSfx('dreidel', 'sfx_dreidel_spin.mp3', 0.48);
+
+function ensureAudioOnUserAction() {
+  if (userExplicitlyMuted) return;
+  if (!audioEnabled) {
+    audioEnabled = true;
+    document.getElementById('btn-audio').classList.add('active');
+    refreshLabels();
+    ambientAudio.play().catch(() => {});
+  }
+}
+
+function playSfx(name) {
+  if (!audioEnabled) return;
+  const base = SFX_POOL[name];
+  if (!base) return;
+  try {
+    const inst = base.cloneNode();
+    inst.volume = base.volume;
+    inst.play().catch(() => {});
+  } catch {}
+}
+
+// Scene Anchors & Interactive State
+const TABLE_POS = new THREE.Vector3(0, 0, -1.90);
+const MENORAH_REST_POS = new THREE.Vector3(0, 0.5429, -1.90);
+const MENORAH_WINDOW_POS = new THREE.Vector3(0, 0.94, -3.78);
+let menorahGroup = null;
+const wicks = [];
+const dreidels = [];
+
+// Anatomical Real Human FPV Hand + Swappable Held Props (Chamach OR 3-bite Sufganiya)
+let handRoot = null;
+let handChamashGroup = null;
+let handFlame = null;
+let handShamashLocalTip = new THREE.Vector3(0, 0.1893, -0.0912);
+let handSufganiyaGroup = null;
+const sufganiyaBiteMeshes = [];
+
+let eatingState = { active: false, bitesTaken: 0, shakeT: 0 };
+
+// Openable Leather 3D Siddour
+let siddurRoot = null;
+let siddurCoverPivot = null;
+let siddurFlipPivot = null;
+let siddurTargetOpen = false;
+let siddurOpenAnim = 0.0; // 0 = closed, 1 = open (-3.00 rad)
+let siddurFlipping = false;
+let siddurFlipAnim = 0.0;
+
+// Rigged Human Host (person_v4)
+let personScene = null;
+let personBones = {};
+let personBoneRest = {};
+let personBoneCharRestWorld = {};
+let personIgniteCandle = null;
+let personIgniteFlame = null;
+let sceneTime = 0;
+
+let plateRoot = null;
 let shamashReachAnim = null;
 let pointerNDC = new THREE.Vector2(0, 0);
 let raycaster = new THREE.Raycaster();
-let hoveredWickIdx = null;
-let hoveredDreidel = null;
+let hoverTarget = null; // { kind: 'wick'|'dreidel'|'plate'|'siddur', idx?: number, obj?: any }
 
 // Progress Dots
 const dotsEl = document.getElementById('progress-dots');
@@ -531,7 +464,7 @@ function getLitRegularCount() {
 }
 
 function getNextSuggestedIdx() {
-  const order = manifest ? manifest.ignite_order : [4, 8, 7, 6, 5, 3, 2, 1, 0];
+  const order = manifest?.ignite_order || [4, 8, 7, 6, 5, 3, 2, 1, 0];
   for (const idx of order) {
     const w = wicks.find((x) => x.idx === idx);
     if (w && !w.lit) return idx;
@@ -540,19 +473,14 @@ function getNextSuggestedIdx() {
 }
 
 function updateProgressUI() {
-  const count = getLitRegularCount();
-  document.getElementById('ui-count').textContent = `${count} / 8`;
+  const lit = getLitRegularCount();
+  document.getElementById('ui-count').textContent = `${lit} / 8`;
   for (const w of wicks) {
     const dot = dotMap.get(w.idx);
     if (dot) dot.classList.toggle('lit', w.lit);
   }
-  const banner = document.getElementById('banner-complete');
-  if (count === 8) {
-    banner.textContent = I18N[lang].complete;
-    banner.classList.add('visible');
-  } else {
-    banner.classList.remove('visible');
-  }
+  const done = lit === 8;
+  document.getElementById('banner-complete').classList.toggle('show', done);
 }
 
 function igniteWickImmediate(idx, withSound = true) {
@@ -563,8 +491,8 @@ function igniteWickImmediate(idx, withSound = true) {
   w.halo.visible = false;
   const wp = new THREE.Vector3();
   w.flame.getWorldPosition(wp);
-  spawnSparks(wp);
-  if (withSound) playIgniteSound();
+  spawnBurst(wp, GLOW_TEX, 26, 0.36, 0.35, 0.028, 0xffcc66);
+  if (withSound) playSfx('ignite');
   updateProgressUI();
   return true;
 }
@@ -584,6 +512,17 @@ function resetAllWicks() {
   updateProgressUI();
 }
 
+function syncHandVisibility() {
+  if (!handRoot) return;
+  const showHand = (playMode === 'self') || eatingState.active;
+  handRoot.visible = showHand;
+  if (handChamashGroup) handChamashGroup.visible = (playMode === 'self' && !eatingState.active);
+  if (handSufganiyaGroup) handSufganiyaGroup.visible = eatingState.active;
+  for (let i = 0; i < 3; i++) {
+    if (sufganiyaBiteMeshes[i]) sufganiyaBiteMeshes[i].visible = (i === eatingState.bitesTaken);
+  }
+}
+
 function setPlayMode(mode) {
   playMode = mode;
   document.getElementById('btn-mode-scene').classList.toggle('active', mode === 'character');
@@ -596,27 +535,33 @@ function setPlayMode(mode) {
     personScene.position.set(0.24, 0, -2.30);
     personScene.rotation.set(0, 0, 0);
   }
-  if (handRoot) handRoot.visible = (mode === 'self');
+  syncHandVisibility();
   resetAllWicks();
   if (mode === 'character') sceneTime = 0;
 }
 
-function setCameraView(preset) {
+function setCameraView(preset, smooth = true) {
   if (renderer.xr.isPresenting) return;
+  let tx = 0, tz = -0.78, tyaw = 0, tpitch = -0.24;
   if (preset === 'front') {
-    playerRig.position.set(0, 0, -0.78);
-    yaw = 0.0; pitch = -0.26;
+    tx = 0; tz = -0.78; tyaw = 0.0; tpitch = -0.24;
   } else if (preset === 'left') {
-    playerRig.position.set(-1.55, 0, -1.75);
-    yaw = -1.18; pitch = -0.22;
+    tx = -1.55; tz = -1.75; tyaw = -1.18; tpitch = -0.20;
   } else if (preset === 'window') {
-    playerRig.position.set(-0.92, 0, -2.65);
-    yaw = -0.62; pitch = -0.14;
+    tx = -0.92; tz = -2.65; tyaw = -0.62; tpitch = -0.14;
+  } else if (preset === 'siddur') {
+    tx = -0.44; tz = -1.16; tyaw = 0.04; tpitch = -0.78;
   }
-  applyCameraRotation();
+  if (!smooth) {
+    camTween = null;
+    playerRig.position.set(tx, 0, tz);
+    yaw = tyaw; pitch = tpitch;
+    applyCameraRotation();
+  } else {
+    camTween = { x: tx, z: tz, yaw: tyaw, pitch: tpitch };
+  }
 }
 
-// Rotate imported bone cleanly in character space (+X=Left, +Y=Up, +Z=Front)
 function poseBoneChar(name, rx, ry, rz) {
   const b = personBones[name];
   const rest = personBoneRest[name];
@@ -627,7 +572,6 @@ function poseBoneChar(name, rx, ry, rz) {
   b.quaternion.copy(rest).multiply(qOff);
 }
 
-// Rotate imported bone in its own bind-pose local axes (ideal for ForeArm elbow hinge & Hand)
 function poseBoneLocal(name, rx, ry, rz) {
   const b = personBones[name];
   const rest = personBoneRest[name];
@@ -636,7 +580,77 @@ function poseBoneLocal(name, rx, ry, rz) {
   b.quaternion.copy(rest).multiply(qOff);
 }
 
-// Load Manifest & All AAA GLBs
+// Interactive Eating Action (Sufganiya 3-bite cycle with Foley SFX & sugar crumbs)
+function triggerSufganiyaAction() {
+  ensureAudioOnUserAction();
+  if (!eatingState.active) {
+    eatingState.active = true;
+    eatingState.bitesTaken = 0;
+    eatingState.shakeT = 0.15;
+    syncHandVisibility();
+    refreshLabels();
+    return;
+  }
+  eatingState.bitesTaken += 1;
+  eatingState.shakeT = 0.28;
+  playSfx(`bite${Math.min(3, eatingState.bitesTaken)}`);
+
+  if (handSufganiyaGroup) {
+    const wp = new THREE.Vector3();
+    handSufganiyaGroup.getWorldPosition(wp);
+    spawnBurst(wp, SUGAR_TEX, 22, 0.28, 0.08, 0.016, 0xfff8f0);
+  }
+
+  if (eatingState.bitesTaken >= 3) {
+    eatingState.active = false;
+    eatingState.bitesTaken = 0;
+  }
+  syncHandVisibility();
+  refreshLabels();
+}
+
+// Interactive Leather 3D Siddour (Open / Flip Page / Close with Foley SFX)
+function openSiddur(moveCamera = true) {
+  ensureAudioOnUserAction();
+  if (!siddurTargetOpen) {
+    siddurTargetOpen = true;
+    playSfx('bookOpen');
+    if (moveCamera) setCameraView('siddur', true);
+    refreshLabels();
+  }
+}
+
+function flipSiddurPage() {
+  ensureAudioOnUserAction();
+  if (!siddurTargetOpen) {
+    openSiddur(true);
+    return;
+  }
+  if (!siddurFlipping) {
+    siddurFlipping = true;
+    siddurFlipAnim = 0.0;
+    playSfx('pageTurn');
+  }
+}
+
+function closeSiddur() {
+  if (siddurTargetOpen) {
+    siddurTargetOpen = false;
+    siddurFlipping = false;
+    siddurFlipAnim = 0.0;
+    playSfx('bookOpen');
+    setCameraView('front', true);
+    refreshLabels();
+  }
+}
+
+function toggleOrFlipSiddur() {
+  ensureAudioOnUserAction();
+  if (!siddurTargetOpen) openSiddur(true);
+  else flipSiddurPage();
+}
+
+// Load Cinema Manifest, Cycles Lightmap & All GLBs
 async function initAssets() {
   const loaderEl = document.getElementById('loader');
   const loaderTxt = document.getElementById('loader-txt');
@@ -646,108 +660,202 @@ async function initAssets() {
   MENORAH_REST_POS.y = tableTopY;
   if (manifest.fpv_shamash_flame_local) handShamashLocalTip.set(...manifest.fpv_shamash_flame_local);
 
+  const texLoader = new THREE.TextureLoader();
+  const loadLightmap = new Promise((resolve) => {
+    texLoader.load('assets/textures/lightmap_salon.jpg', (t) => {
+      t.colorSpace = THREE.SRGBColorSpace;
+      t.flipY = false;
+      t.channel = 1;
+      resolve(t);
+    }, undefined, () => resolve(null));
+  });
+
   const gltfLoader = new GLTFLoader();
   const loadGLB = (name) => new Promise((resolve, reject) => gltfLoader.load(`assets/models/${name}`, resolve, undefined, reject));
 
-  loaderTxt.textContent = 'Chargement mobilier PBR, personnage réaliste et hanoukkia…';
-  const [tblG, hanG, gobG, sufgG, drG, armG, conG, chanG, lantG, handG, persG] = await Promise.all([
+  loaderTxt.textContent = 'Chargement salon Cycles GI, Jérusalem 3D, Siddour & main réaliste…';
+  const [
+    lightMapTex,
+    salonG, jerExtG, tblG, hanG, gobG, plateG, drG,
+    armG, conG, chanG, siddurG, handG, chamG,
+    sb0, sb1, sb2, persG
+  ] = await Promise.all([
+    loadLightmap,
+    loadGLB('salon_arch_baked.glb'),
+    loadGLB('jerusalem_3d_exterior.glb'),
     loadGLB('table_v2.glb'),
     loadGLB('hanoukia_v2.glb'),
     loadGLB('goblets_v2.glb'),
-    loadGLB('sufganiot_plate_v2.glb'),
+    loadGLB('sufganiot_plate_v4.glb'),
     loadGLB('dreidel_v2.glb'),
     loadGLB('armchair_v2.glb'),
     loadGLB('console_v2.glb'),
     loadGLB('chandelier_v2.glb'),
-    loadGLB('lantern_v2.glb'),
-    loadGLB('fpv_hand_shamash.glb'),
-    loadGLB('person_v3.glb')
+    loadGLB('siddur_3d.glb'),
+    loadGLB('fpv_hand_real.glb'),
+    loadGLB('fpv_chamash_prop.glb'),
+    loadGLB('sufganiya_bite0.glb'),
+    loadGLB('sufganiya_bite1.glb'),
+    loadGLB('sufganiya_bite2.glb'),
+    loadGLB('person_v4.glb')
   ]);
 
-  const enableShadows = (root) => {
-    root.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+  const enableShadows = (root, cast = true) => {
+    root.traverse((o) => {
+      if (o.isMesh) {
+        o.castShadow = cast;
+        o.receiveShadow = true;
+      }
+    });
   };
 
+  // Apply Cycles Metal Baked Global Illumination Lightmap (TEXCOORD_1) onto salon architecture!
+  salonG.scene.traverse((o) => {
+    if (o.isMesh) {
+      const isGlass = o.name.includes('Glass');
+      o.receiveShadow = !isGlass;
+      o.castShadow = !isGlass && !o.name.includes('Floor') && !o.name.includes('Rug');
+      if (isGlass && o.material) {
+        o.material.transparent = true;
+        o.material.opacity = 0.14;
+        o.material.depthWrite = false;
+      } else if (lightMapTex && o.geometry?.attributes?.uv1 && o.material && !o.name.includes('fancy_picture_frame')) {
+        o.material.lightMap = lightMapTex;
+        o.material.lightMapIntensity = 1.05;
+        o.material.needsUpdate = true;
+      }
+    }
+  });
+  scene.add(salonG.scene);
+
+  // Authentic 3D Old City of Jerusalem Exterior
+  jerExtG.scene.traverse((o) => {
+    if (o.isMesh) {
+      o.receiveShadow = true;
+      o.castShadow = o.name.startsWith('Balcony_');
+      if (o.name.includes('glass') && o.material) {
+        o.material.emissive = new THREE.Color(0xffb55c);
+        o.material.emissiveIntensity = 1.6;
+      }
+    }
+  });
+  scene.add(jerExtG.scene);
+
+  // Table & Hanoukia (wrapped inside menorahGroup)
   tblG.scene.position.copy(TABLE_POS);
   enableShadows(tblG.scene);
   scene.add(tblG.scene);
 
-  // Menorah wrapped inside movable menorahGroup so character can lift & carry it to the window!
   menorahGroup = new THREE.Group();
   menorahGroup.position.copy(MENORAH_REST_POS);
   enableShadows(hanG.scene);
+  hanG.scene.traverse((o) => {
+    if (o.isMesh && o.material) {
+      if (o.material.name.includes('Silver')) { o.material.metalness = 0.96; o.material.roughness = 0.14; }
+      if (o.material.name.includes('Crystal')) { o.material.transparent = true; o.material.opacity = 0.38; o.material.roughness = 0.05; }
+    }
+  });
   menorahGroup.add(hanG.scene);
   scene.add(menorahGroup);
 
-  gobG.scene.position.set(-0.50, tableTopY, -1.72);
+  // Kiddush Goblets
+  gobG.scene.position.set(-0.56, tableTopY, -1.96);
+  gobG.scene.rotation.y = 0.45;
   enableShadows(gobG.scene);
   scene.add(gobG.scene);
 
-  sufgG.scene.position.set(0.50, tableTopY, -1.65);
-  enableShadows(sufgG.scene);
-  scene.add(sufgG.scene);
+  // CC0 Carved Plate + 3 Powdered-Sugar Sufganiyot (clickable!)
+  plateRoot = plateG.scene;
+  const pp = manifest.plate_table_pos || [0.54, tableTopY, -1.78];
+  plateRoot.position.set(pp[0], pp[1], pp[2]);
+  enableShadows(plateRoot);
+  plateRoot.traverse((o) => { if (o.isMesh) o.userData.interactiveKind = 'plate'; });
+  scene.add(plateRoot);
 
-  // 3 Grounded UV-engraved Dreidels flush on table_top_y (dreidel_base_y == 0.0 -> zero floating!)
-  for (const [dx, dz, rot] of [[-0.28, -1.44, 0.25], [0.02, -1.40, 0.85], [0.29, -1.45, 1.55]]) {
-    const clone = drG.scene.clone();
+  // Grounded Spinning Dreidels
+  for (const [dx, dz, rot] of [[-0.64, -1.58, 0.3], [-0.46, -1.52, 1.1], [0.42, -1.54, 2.2]]) {
+    const clone = drG.scene.clone(true);
     clone.position.set(dx, tableTopY, dz);
     clone.rotation.y = rot;
     enableShadows(clone);
+    clone.traverse((o) => { if (o.isMesh) o.userData.dreidelIdx = dreidels.length; });
     scene.add(clone);
-    dreidels.push({ mesh: clone, vel: 0.45 + Math.random() * 0.35 });
+    dreidels.push({ mesh: clone, vel: 0.45 + Math.random() * 0.4 });
   }
 
-  // Photogrammetric Armchairs, Console + Vases/Books, Chandelier & Flanking Lanterns
-  for (const [ax, az, ay] of [[-2.05, -1.25, -2.55], [2.05, -1.25, 2.55]]) {
-    const ac = armG.scene.clone();
-    ac.position.set(ax, 0, az);
-    ac.rotation.y = ay;
-    enableShadows(ac);
-    scene.add(ac);
-  }
-  conG.scene.position.set(3.28, 0, 0);
+  // Openable Burgundy Leather 3D Siddour on Table
+  siddurRoot = siddurG.scene;
+  const sp = manifest.siddur_table_pos || [-0.46, tableTopY, -1.68];
+  siddurRoot.position.set(sp[0], sp[1], sp[2]);
+  siddurRoot.rotation.y = 0.18;
+  enableShadows(siddurRoot);
+  siddurRoot.traverse((o) => {
+    if (o.name === 'Siddur_FrontCoverPivot') siddurCoverPivot = o;
+    if (o.name === 'Siddur_FlipPagePivot') siddurFlipPivot = o;
+    if (o.isMesh) {
+      o.userData.interactiveKind = 'siddur';
+      if (o.material) o.material.side = THREE.DoubleSide;
+    }
+  });
+  scene.add(siddurRoot);
+
+  // Photogrammetric Salon Furniture
+  armG.scene.position.set(-2.35, 0, -2.55);
+  armG.scene.rotation.y = 0.65;
+  enableShadows(armG.scene);
+  scene.add(armG.scene);
+
+  const armR = armG.scene.clone(true);
+  armR.position.set(2.35, 0, -2.55);
+  armR.rotation.y = -0.65;
+  enableShadows(armR);
+  scene.add(armR);
+
+  conG.scene.position.set(3.40, 0, 0.0);
   conG.scene.rotation.y = -Math.PI / 2;
   enableShadows(conG.scene);
   scene.add(conG.scene);
 
-  chanG.scene.position.set(0, 4.25, -0.25);
+  chanG.scene.position.set(0, 3.60, -0.25);
   enableShadows(chanG.scene);
   scene.add(chanG.scene);
 
-  for (const lx of [-2.35, 2.35]) {
-    const lt = lantG.scene.clone();
-    lt.position.set(lx, 3.72, -2.55);
-    enableShadows(lt);
-    scene.add(lt);
-  }
-
   // Wicks parented INSIDE menorahGroup
-  for (const [k, localArr] of Object.entries(manifest.wick_positions_local)) {
-    const idx = parseInt(k, 10);
-    const localPos = new THREE.Vector3(localArr[0], localArr[1], localArr[2]);
-    const flame = createFlameGroup(idx === 4 || idx % 2 === 0, idx === 4 ? 1.15 : 1.0);
-    flame.position.copy(localPos);
+  const wickMap = manifest.wick_positions_local || {};
+  for (let idx = 0; idx < 9; idx++) {
+    const pos = wickMap[String(idx)] || [(idx - 4) * 0.07, idx === 4 ? 0.471 : 0.391, idx === 4 ? 0.042 : 0];
+    const flame = createFlameGroup(idx === 4 || idx % 2 === 0, idx === 4 ? 1.2 : 1.0);
+    flame.position.set(pos[0], pos[1], pos[2]);
     flame.visible = false;
     menorahGroup.add(flame);
 
-    const halo = new THREE.Mesh(
-      new THREE.RingGeometry(0.015, 0.023, 18),
-      new THREE.MeshBasicMaterial({ color: 0xffd269, side: THREE.DoubleSide, transparent: true, opacity: 0.55 })
+    const halo = new THREE.Sprite(
+      new THREE.SpriteMaterial({
+        map: GLOW_TEX,
+        color: idx === 4 ? 0xffdf78 : 0xffaa38,
+        transparent: true,
+        opacity: 0.35,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
+      })
     );
-    halo.position.copy(localPos);
-    halo.rotation.x = -Math.PI / 2;
+    halo.position.set(pos[0], pos[1] + 0.015, pos[2]);
+    halo.scale.set(0.08, 0.08, 1);
     halo.visible = false;
     menorahGroup.add(halo);
 
-    const hitMesh = new THREE.Mesh(new THREE.SphereGeometry(0.048, 8, 8), new THREE.MeshBasicMaterial({ visible: false }));
-    hitMesh.position.copy(localPos);
+    const hitMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(0.036, 10, 10),
+      new THREE.MeshBasicMaterial({ visible: false })
+    );
+    hitMesh.position.set(pos[0], pos[1] + 0.012, pos[2]);
     hitMesh.userData.wickIdx = idx;
     menorahGroup.add(hitMesh);
 
-    wicks.push({ idx, localPos, flame, halo, hitMesh, lit: false });
+    wicks.push({ idx, localPos: new THREE.Vector3(...pos), flame, halo, hitMesh, lit: false });
   }
 
-  // Realistic Rigged Person + Velvet Kippa + Held Shamash Candle
+  // Rigged Realistic Human Host (person_v4)
   personScene = persG.scene;
   personScene.position.set(0, 0, 0);
   personScene.rotation.set(0, 0, 0);
@@ -763,7 +871,6 @@ async function initAssets() {
   });
   personScene.position.set(0.24, 0, -2.30);
 
-  // Attach glowing 16cm Shamash taper candle oriented cleanly out of character's RightHand fingers
   if (personBones.RightHand) {
     personIgniteCandle = new THREE.Group();
     const wax = new THREE.Mesh(
@@ -783,23 +890,43 @@ async function initAssets() {
     personBones.RightHand.add(personIgniteCandle);
   }
 
-  // FPV First-Person Right Hand (Self Mode & WebXR)
+  // Real Anatomical Human FPV Hand + Swappable Shamash / 3-Bite Sufganiyot
   handRoot = new THREE.Group();
+  enableShadows(handG.scene, false);
   handRoot.add(handG.scene);
-  handFlame = createFlameGroup(true, 1.2);
+
+  handChamashGroup = new THREE.Group();
+  handChamashGroup.add(chamG.scene);
+  handFlame = createFlameGroup(true, 1.15);
   handFlame.position.copy(handShamashLocalTip);
-  handRoot.add(handFlame);
-  handRoot.position.set(0.24, -0.17, -0.44);
-  handRoot.rotation.set(0.08, -0.22, 0.04);
+  handChamashGroup.add(handFlame);
+  handRoot.add(handChamashGroup);
+
+  handSufganiyaGroup = new THREE.Group();
+  handSufganiyaGroup.position.set(-0.01, 0.032, -0.02);
+  handSufganiyaGroup.rotation.set(0.32, -0.35, 0.1);
+  for (const sg of [sb0, sb1, sb2]) {
+    enableShadows(sg.scene, false);
+    sg.scene.visible = false;
+    handSufganiyaGroup.add(sg.scene);
+    sufganiyaBiteMeshes.push(sg.scene);
+  }
+  handSufganiyaGroup.visible = false;
+  handRoot.add(handSufganiyaGroup);
+
+  handRoot.position.set(0.22, -0.18, -0.42);
+  handRoot.rotation.set(0.06, -0.18, 0.04);
   handRoot.visible = false;
   camera.add(handRoot);
 
-  // WebXR Pico 2 controller binding
+  // WebXR Pico 2 controller binding & 90Hz optimization
   const ctrl0 = renderer.xr.getController(0);
   scene.add(ctrl0);
   renderer.xr.addEventListener('sessionstart', () => {
+    try { renderer.xr.setFoveation(1.0); } catch {}
+    renderer.toneMapping = THREE.AgXToneMapping;
     document.getElementById('vr-mask').classList.add('hidden');
-    if (playMode === 'self' && handRoot) {
+    if (handRoot) {
       camera.remove(handRoot);
       ctrl0.add(handRoot);
       handRoot.position.set(0, -0.02, -0.04);
@@ -807,20 +934,22 @@ async function initAssets() {
     }
   });
   renderer.xr.addEventListener('sessionend', () => {
+    renderer.toneMapping = THREE.NoToneMapping;
     if (handRoot) {
       ctrl0.remove(handRoot);
       camera.add(handRoot);
-      handRoot.position.set(0.24, -0.17, -0.44);
-      handRoot.rotation.set(0.08, -0.22, 0.04);
+      handRoot.position.set(0.22, -0.18, -0.42);
+      handRoot.rotation.set(0.06, -0.18, 0.04);
     }
   });
 
   setPlayMode('character');
+  refreshLabels();
   loaderEl.classList.add('done');
   setTimeout(() => { loaderEl.style.display = 'none'; }, 400);
 }
 
-// Character Animation Timeline (0..25s: Light 9 wicks -> Lift Menorah -> Walk to Arched Window -> Place facing Jerusalem!)
+// Character Animation Timeline + Subtle Organic Breathing Life
 const CHAR_IGNITE_TIMES = [
   [1.2, 4], [2.8, 8], [4.3, 7], [5.8, 6], [7.3, 5], [8.8, 3], [10.3, 2], [11.8, 1], [13.3, 0]
 ];
@@ -836,13 +965,12 @@ function updateCharacterTimeline(dt, now) {
 
   sceneTime = Math.min(27.0, sceneTime + dt);
   const t = sceneTime;
+  const breath = Math.sin(now * 2.1) * 0.018;
 
-  // Reset leg stride unless walking
   poseBoneChar('LeftUpLeg', 0, 0, 0);
   poseBoneChar('RightUpLeg', 0, 0, 0);
 
   if (t < 15.0) {
-    // Phase 1: Stand behind table facing +Z, light each cup cleanly in Halachic order
     if (personIgniteCandle) personIgniteCandle.visible = true;
     for (const [ti, widx] of CHAR_IGNITE_TIMES) {
       if (t >= ti) igniteWickImmediate(widx, true);
@@ -854,25 +982,20 @@ function updateCharacterTimeline(dt, now) {
     personScene.position.set(0.24 + cupX * 0.32, 0, -2.30);
     personScene.rotation.set(0, 0, 0);
 
-    poseBoneChar('Spine1', 0.10, -cupX * 0.25, 0);
-    poseBoneChar('Head', 0.24, -cupX * 0.42, 0);
-    // Left arm rests naturally beside waist
+    poseBoneChar('Spine1', 0.10 + breath, -cupX * 0.25, 0);
+    poseBoneChar('Head', 0.24 + breath * 0.5, -cupX * 0.42, 0);
     poseBoneChar('LeftArm', 0.10, 0.0, -1.25);
     poseBoneLocal('LeftForeArm', 0, 0, 0.35);
-    // Right arm extends smoothly forward & down to cup height (y~1.03, z~-1.90)
     poseBoneChar('RightArm', -0.32 + bob, 0.16 - cupX * 0.72, 1.16);
     poseBoneLocal('RightForeArm', 0, 0, -0.58 - bob);
 
     menorahGroup.position.copy(MENORAH_REST_POS);
     menorahGroup.rotation.set(0, 0, 0);
   } else if (t < 16.6) {
-    // Phase 2: Reach both hands around the Hanoukia stem and lift smoothly off the table
     if (personIgniteCandle) personIgniteCandle.visible = false;
     const p = (t - 15.0) / 1.6;
     const sp = p * p * (3 - 2 * p);
-    const px = THREE.MathUtils.lerp(0.24, 0.0, sp);
-    const pz = -2.30;
-    personScene.position.set(px, 0, pz);
+    personScene.position.set(THREE.MathUtils.lerp(0.24, 0.0, sp), 0, -2.30);
     personScene.rotation.set(0, 0, 0);
 
     poseBoneChar('Spine1', 0.08, 0, 0);
@@ -882,19 +1005,16 @@ function updateCharacterTimeline(dt, now) {
     poseBoneChar('RightArm', -0.28, 0.35, 1.22);
     poseBoneLocal('RightForeArm', 0, 0, -0.92);
 
-    const my = THREE.MathUtils.lerp(tableTopY, 0.96, sp);
-    menorahGroup.position.set(0, my, -1.90);
+    menorahGroup.position.set(0, THREE.MathUtils.lerp(tableTopY, 0.96, sp), -1.90);
     menorahGroup.rotation.set(0, 0, 0);
   } else if (t < 18.6) {
-    // Phase 3a: Pivot smoothly to face the arched Jerusalem window (-Z) keeping Menorah centered in front of chest
     if (personIgniteCandle) personIgniteCandle.visible = false;
     const p = (t - 16.6) / 2.0;
     const sp = p * p * (3 - 2 * p);
     const rotY = THREE.MathUtils.lerp(0.0, Math.PI, sp);
-    const px = 0.0;
     const pz = THREE.MathUtils.lerp(-2.30, -2.42, sp);
 
-    personScene.position.set(px, 0, pz);
+    personScene.position.set(0, 0, pz);
     personScene.rotation.set(0, rotY, 0);
 
     poseBoneChar('Spine1', 0.05, 0, 0);
@@ -904,19 +1024,17 @@ function updateCharacterTimeline(dt, now) {
     poseBoneChar('RightArm', -0.30, 0.35, 1.22);
     poseBoneLocal('RightForeArm', 0, 0, -0.92);
 
-    menorahGroup.position.set(px + Math.sin(rotY) * 0.40, 0.98, pz + Math.cos(rotY) * 0.40);
+    menorahGroup.position.set(Math.sin(rotY) * 0.40, 0.98, pz + Math.cos(rotY) * 0.40);
     menorahGroup.rotation.set(0, rotY, 0);
   } else if (t < 22.4) {
-    // Phase 3b: Walk straight toward the open window with both hands cradling the lit Menorah in front
     if (personIgniteCandle) personIgniteCandle.visible = false;
     const p = (t - 18.6) / 3.8;
     const sp = p * p * (3 - 2 * p);
     const walkBob = Math.sin(p * Math.PI * 6) * 0.012;
     const pz = THREE.MathUtils.lerp(-2.42, -3.38, sp);
-    const rotY = Math.PI;
 
     personScene.position.set(0, walkBob, pz);
-    personScene.rotation.set(0, rotY, 0);
+    personScene.rotation.set(0, Math.PI, 0);
 
     const stride = Math.sin(p * Math.PI * 6) * 0.26;
     poseBoneChar('LeftUpLeg', -stride, 0, 0);
@@ -931,7 +1049,6 @@ function updateCharacterTimeline(dt, now) {
     menorahGroup.position.set(0, THREE.MathUtils.lerp(0.98, MENORAH_WINDOW_POS.y, sp) + walkBob * 0.5, pz - 0.40);
     menorahGroup.rotation.set(0, Math.PI, 0);
   } else if (t < 23.6) {
-    // Phase 3c: Place Menorah gently onto walnut windowsill & step back-right respectfully
     if (personIgniteCandle) personIgniteCandle.visible = false;
     const p = (t - 22.4) / 1.2;
     const sp = p * p * (3 - 2 * p);
@@ -948,15 +1065,14 @@ function updateCharacterTimeline(dt, now) {
     menorahGroup.position.copy(MENORAH_WINDOW_POS);
     menorahGroup.rotation.set(0, Math.PI, 0);
   } else {
-    // Phase 4: Lit Hanoukia stands proudly on walnut windowsill facing Jerusalem 3D skyline
     if (personIgniteCandle) personIgniteCandle.visible = false;
     personScene.position.set(0.46, 0, -3.20);
     personScene.rotation.set(0, 2.58, 0);
     menorahGroup.position.copy(MENORAH_WINDOW_POS);
     menorahGroup.rotation.set(0, Math.PI, 0);
 
-    poseBoneChar('Spine1', 0.02, 0, 0);
-    poseBoneChar('Head', 0.08 + Math.sin(now * 1.1) * 0.02, -0.15, 0);
+    poseBoneChar('Spine1', 0.02 + breath, 0, 0);
+    poseBoneChar('Head', 0.08 + Math.sin(now * 1.1) * 0.025, -0.15 + Math.sin(now * 0.7) * 0.04, 0);
     poseBoneChar('LeftArm', 0.12, 0, -1.25);
     poseBoneLocal('LeftForeArm', 0, 0, 0.35);
     poseBoneChar('RightArm', 0.12, 0, 1.25);
@@ -964,7 +1080,7 @@ function updateCharacterTimeline(dt, now) {
   }
 }
 
-// Input Handling (Mouse Drag Look + Hover + Click Ignite / Dreidel Spin + WASD + Hide HUD 'H')
+// Input Handling (Smooth Drag Look + Raycast Click + Keyboard E/B/WASD/H)
 let isDragging = false;
 let dragMoved = false;
 let lastMouse = { x: 0, y: 0 };
@@ -979,51 +1095,61 @@ canvas.addEventListener('pointerdown', (e) => {
 window.addEventListener('pointermove', (e) => {
   pointerNDC.x = (e.clientX / window.innerWidth) * 2 - 1;
   pointerNDC.y = -(e.clientY / window.innerHeight) * 2 + 1;
-  if (isDragging) {
+  if (isDragging && !renderer.xr.isPresenting) {
     const dx = e.clientX - lastMouse.x;
     const dy = e.clientY - lastMouse.y;
-    if (Math.abs(dx) + Math.abs(dy) > 4) dragMoved = true;
-    yaw -= dx * 0.0032;
-    pitch = Math.max(-1.05, Math.min(0.85, pitch - dy * 0.0032));
-    applyCameraRotation();
+    if (Math.abs(dx) + Math.abs(dy) > 3) {
+      dragMoved = true;
+      camTween = null;
+    }
+    yaw -= dx * 0.0042;
+    pitch = Math.max(-1.12, Math.min(0.85, pitch - dy * 0.0042));
     lastMouse = { x: e.clientX, y: e.clientY };
+    applyCameraRotation();
   }
 });
 
-window.addEventListener('pointerup', (e) => {
-  if (!isDragging) return;
-  isDragging = false;
-  if (!dragMoved && e.target === canvas) {
-    if (hoveredWickIdx !== null && playMode === 'self') {
-      shamashReachAnim = { wickIdx: hoveredWickIdx, start: performance.now() / 1000, duration: 0.42, litTriggered: false };
-    } else if (hoveredDreidel) {
-      hoveredDreidel.vel = 26.0;
+window.addEventListener('pointerup', () => {
+  if (isDragging && !dragMoved && hoverTarget) {
+    ensureAudioOnUserAction();
+    if (hoverTarget.kind === 'dreidel') {
+      dreidels[hoverTarget.idx].vel = 15.0;
+      playSfx('dreidel');
+    } else if (hoverTarget.kind === 'plate') {
+      triggerSufganiyaAction();
+    } else if (hoverTarget.kind === 'siddur') {
+      toggleOrFlipSiddur();
+    } else if (hoverTarget.kind === 'wick' && playMode === 'self') {
+      igniteWithReach(hoverTarget.idx);
     }
   }
+  isDragging = false;
 });
+
+function igniteWithReach(widx) {
+  const w = wicks.find((x) => x.idx === widx);
+  if (!w || w.lit) return;
+  shamashReachAnim = { widx, t: 0, dur: 0.45, ignited: false };
+}
 
 window.addEventListener('keydown', (e) => {
   keys.add(e.code);
   if (e.code === 'KeyH') document.body.classList.toggle('hud-hidden');
+  if (e.code === 'KeyE') triggerSufganiyaAction();
+  if (e.code === 'KeyB') toggleOrFlipSiddur();
+  if (e.code === 'Escape' && siddurTargetOpen) closeSiddur();
   if (e.code === 'Space' && playMode === 'self') {
-    e.preventDefault();
-    const targetIdx = hoveredWickIdx !== null ? hoveredWickIdx : getNextSuggestedIdx();
-    if (targetIdx !== null) shamashReachAnim = { wickIdx: targetIdx, start: performance.now() / 1000, duration: 0.42, litTriggered: false };
+    const nxt = getNextSuggestedIdx();
+    if (nxt !== null) igniteWithReach(nxt);
   }
 });
 window.addEventListener('keyup', (e) => keys.delete(e.code));
 
-window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  composer.setSize(window.innerWidth, window.innerHeight);
-});
-
-// UI Controls Wiring
+// UI Labels & Controls
 function refreshLabels() {
   const t = I18N[lang];
   document.documentElement.dir = t.dir;
+  document.documentElement.lang = lang;
   document.getElementById('ui-title').textContent = t.title;
   document.getElementById('ui-sub').textContent = t.sub;
   document.getElementById('ui-count-label').textContent = t.countLabel;
@@ -1034,21 +1160,36 @@ function refreshLabels() {
   document.getElementById('btn-cam-window').textContent = t.camWindow;
   document.getElementById('btn-replay').textContent = t.replay;
   document.getElementById('btn-ignite-next').textContent = t.igniteNext;
+  document.getElementById('btn-eat-sufganiya').textContent = eatingState.active ? t.eatBtnBite(eatingState.bitesTaken + 1) : t.eatBtnIdle;
+  document.getElementById('btn-eat-sufganiya').classList.toggle('active', eatingState.active);
+  document.getElementById('btn-open-siddur').textContent = siddurTargetOpen ? t.siddurOpen : t.siddurClosed;
+  document.getElementById('btn-open-siddur').classList.toggle('active', siddurTargetOpen);
+
   const maskOn = !document.getElementById('vr-mask').classList.contains('hidden');
   document.getElementById('btn-vr-mask').textContent = maskOn ? t.maskOn : t.maskOff;
   document.getElementById('btn-audio').textContent = audioEnabled ? t.audioOn : t.audioOff;
+  document.getElementById('banner-complete').textContent = t.complete;
   document.getElementById('help-strip').textContent = t.help;
 }
 
 document.getElementById('btn-mode-scene').addEventListener('click', () => setPlayMode('character'));
 document.getElementById('btn-mode-self').addEventListener('click', () => setPlayMode('self'));
-document.getElementById('btn-cam-front').addEventListener('click', () => setCameraView('front'));
-document.getElementById('btn-cam-left').addEventListener('click', () => setCameraView('left'));
-document.getElementById('btn-cam-window').addEventListener('click', () => setCameraView('window'));
-document.getElementById('btn-replay').addEventListener('click', () => setPlayMode('character'));
+document.getElementById('btn-cam-front').addEventListener('click', () => setCameraView('front', true));
+document.getElementById('btn-cam-left').addEventListener('click', () => setCameraView('left', true));
+document.getElementById('btn-cam-window').addEventListener('click', () => setCameraView('window', true));
+document.getElementById('btn-replay').addEventListener('click', () => {
+  setPlayMode('character');
+  sceneTime = 0;
+});
 document.getElementById('btn-ignite-next').addEventListener('click', () => {
+  ensureAudioOnUserAction();
   const nxt = getNextSuggestedIdx();
-  if (nxt !== null) shamashReachAnim = { wickIdx: nxt, start: performance.now() / 1000, duration: 0.42, litTriggered: false };
+  if (nxt !== null) igniteWithReach(nxt);
+});
+document.getElementById('btn-eat-sufganiya').addEventListener('click', triggerSufganiyaAction);
+document.getElementById('btn-open-siddur').addEventListener('click', () => {
+  if (!siddurTargetOpen) openSiddur(true);
+  else closeSiddur();
 });
 document.getElementById('btn-vr-mask').addEventListener('click', (e) => {
   document.getElementById('vr-mask').classList.toggle('hidden');
@@ -1057,6 +1198,7 @@ document.getElementById('btn-vr-mask').addEventListener('click', (e) => {
 });
 document.getElementById('btn-audio').addEventListener('click', (e) => {
   audioEnabled = !audioEnabled;
+  userExplicitlyMuted = !audioEnabled;
   e.currentTarget.classList.toggle('active', audioEnabled);
   if (audioEnabled) ambientAudio.play().catch(() => {});
   else ambientAudio.pause();
@@ -1068,18 +1210,30 @@ document.getElementById('btn-lang').addEventListener('click', () => {
   updateProgressUI();
 });
 
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  composer.setSize(window.innerWidth, window.innerHeight);
+  if (n8aoPass) n8aoPass.setSize(window.innerWidth, window.innerHeight);
+});
+
 // Deterministic Test API
 window.__FPV_DEBUG__ = {
   getState: () => ({
-    loaded: wicks.length === 9 && !!handRoot && !!personScene,
+    loaded: wicks.length === 9 && !!handRoot && !!personScene && !!siddurRoot,
     playMode,
     sceneTime: Number(sceneTime.toFixed(2)),
     litRegular: getLitRegularCount(),
     menorahZ: menorahGroup ? Number(menorahGroup.position.z.toFixed(2)) : null,
+    eatingActive: eatingState.active,
+    bitesTaken: eatingState.bitesTaken,
+    siddurOpen: siddurTargetOpen,
+    siddurCoverRotZ: siddurCoverPivot ? Number(siddurCoverPivot.rotation.z.toFixed(2)) : null,
     lang
   }),
   setMode: (m) => setPlayMode(m),
-  setView: (v) => setCameraView(v),
+  setView: (v) => setCameraView(v, false),
   jumpToPhase: (ph) => {
     setPlayMode('character');
     if (ph === 'lighting') {
@@ -1099,6 +1253,20 @@ window.__FPV_DEBUG__ = {
     const nxt = getNextSuggestedIdx();
     return nxt !== null ? igniteWickImmediate(nxt, false) : false;
   },
+  eatSufganiya: () => {
+    triggerSufganiyaAction();
+    return { active: eatingState.active, bitesTaken: eatingState.bitesTaken };
+  },
+  openSiddur: (instant = false) => {
+    openSiddur(true);
+    if (instant) {
+      siddurOpenAnim = 1.0;
+      if (siddurCoverPivot) siddurCoverPivot.rotation.z = -3.00;
+      setCameraView('siddur', false);
+    }
+  },
+  flipSiddurPage: () => flipSiddurPage(),
+  closeSiddur: () => closeSiddur(),
   reset: () => resetAllWicks()
 };
 
@@ -1109,84 +1277,150 @@ renderer.setAnimationLoop(() => {
   const dt = Math.min(0.05, now - prevT);
   prevT = now;
 
-  // WASD / Arrows walking
-  const fwd = new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw));
-  const right = new THREE.Vector3(Math.cos(yaw), 0, -Math.sin(yaw));
-  const speed = 1.25 * dt;
-  if (keys.has('KeyW') || keys.has('ArrowUp')) playerRig.position.addScaledVector(fwd, speed);
-  if (keys.has('KeyS') || keys.has('ArrowDown')) playerRig.position.addScaledVector(fwd, -speed);
-  if (keys.has('KeyA') || keys.has('ArrowLeft')) playerRig.position.addScaledVector(right, -speed);
-  if (keys.has('KeyD') || keys.has('ArrowRight')) playerRig.position.addScaledVector(right, speed);
-  playerRig.position.x = Math.max(-2.6, Math.min(2.6, playerRig.position.x));
-  playerRig.position.z = Math.max(-3.1, Math.min(1.8, playerRig.position.z));
+  // Smooth Cinema Camera Interpolation
+  if (camTween && !renderer.xr.isPresenting) {
+    const k = 1.0 - Math.exp(-7.5 * dt);
+    playerRig.position.x = THREE.MathUtils.lerp(playerRig.position.x, camTween.x, k);
+    playerRig.position.z = THREE.MathUtils.lerp(playerRig.position.z, camTween.z, k);
+    yaw = THREE.MathUtils.lerp(yaw, camTween.yaw, k);
+    pitch = THREE.MathUtils.lerp(pitch, camTween.pitch, k);
+    applyCameraRotation();
+    if (Math.hypot(playerRig.position.x - camTween.x, playerRig.position.z - camTween.z) < 0.008) {
+      camTween = null;
+    }
+  }
 
+  // Smooth WASD Walking inside Salon Bounds
+  if (!renderer.xr.isPresenting) {
+    const moveFwd = (keys.has('KeyW') || keys.has('ArrowUp') ? 1 : 0) - (keys.has('KeyS') || keys.has('ArrowDown') ? 1 : 0);
+    const moveStrafe = (keys.has('KeyD') || keys.has('ArrowRight') ? 1 : 0) - (keys.has('KeyA') || keys.has('ArrowLeft') ? 1 : 0);
+    if (moveFwd || moveStrafe) {
+      camTween = null;
+      const spd = 1.75 * dt;
+      const fx = -Math.sin(yaw);
+      const fz = -Math.cos(yaw);
+      const rx = Math.cos(yaw);
+      const rz = -Math.sin(yaw);
+      playerRig.position.x = THREE.MathUtils.clamp(playerRig.position.x + (fx * moveFwd + rx * moveStrafe) * spd, -3.1, 3.1);
+      playerRig.position.z = THREE.MathUtils.clamp(playerRig.position.z + (fz * moveFwd + rz * moveStrafe) * spd, -3.25, 3.1);
+    }
+  }
+
+  // Character Lighting -> Portage Choreography
   updateCharacterTimeline(dt, now);
 
-  // Hover Raycast (Wicks in self mode, Dreidels anytime)
-  const rcVec = renderer.xr.isPresenting ? new THREE.Vector2(0, 0) : pointerNDC;
-  raycaster.setFromCamera(rcVec, camera);
+  // Siddour 3D Cover Open & Flipping Page Animation
+  if (siddurCoverPivot) {
+    const tgt = siddurTargetOpen ? 1.0 : 0.0;
+    siddurOpenAnim = THREE.MathUtils.lerp(siddurOpenAnim, tgt, 1.0 - Math.exp(-8.0 * dt));
+    siddurCoverPivot.rotation.z = -3.00 * siddurOpenAnim;
+  }
+  if (siddurFlipPivot && siddurFlipping) {
+    siddurFlipAnim += dt * 1.9;
+    if (siddurFlipAnim >= 1.0) {
+      siddurFlipping = false;
+      siddurFlipAnim = 0.0;
+      siddurFlipPivot.rotation.z = 0.0;
+    } else {
+      const sp = siddurFlipAnim * siddurFlipAnim * (3 - 2 * siddurFlipAnim);
+      siddurFlipPivot.rotation.z = -Math.PI * 0.96 * sp;
+    }
+  }
+
+  // Raycast Interactive Targets (Dreidels, Sufganiya Plate, Leather Siddour, Wicks)
+  const hitList = [];
+  for (const d of dreidels) hitList.push(d.mesh);
+  if (plateRoot) hitList.push(plateRoot);
+  if (siddurRoot) hitList.push(siddurRoot);
+  if (playMode === 'self') {
+    for (const w of wicks) if (!w.lit) hitList.push(w.hitMesh);
+  }
+  raycaster.setFromCamera(pointerNDC, camera);
+  const hits = raycaster.intersectObjects(hitList, true);
+  hoverTarget = null;
+  for (const h of hits) {
+    if (h.object.userData.wickIdx !== undefined && playMode === 'self') {
+      hoverTarget = { kind: 'wick', idx: h.object.userData.wickIdx };
+      break;
+    }
+    if (h.object.userData.dreidelIdx !== undefined) {
+      hoverTarget = { kind: 'dreidel', idx: h.object.userData.dreidelIdx };
+      break;
+    }
+    if (h.object.userData.interactiveKind === 'plate') {
+      hoverTarget = { kind: 'plate' };
+      break;
+    }
+    if (h.object.userData.interactiveKind === 'siddur') {
+      hoverTarget = { kind: 'siddur' };
+      break;
+    }
+  }
+
   const reticle = document.getElementById('reticle');
   const hint = document.getElementById('hover-hint');
-
-  hoveredWickIdx = null;
-  hoveredDreidel = null;
-  if (playMode === 'self') {
-    const hits = raycaster.intersectObjects(wicks.filter((w) => !w.lit).map((w) => w.hitMesh), false);
-    if (hits.length > 0) hoveredWickIdx = hits[0].object.userData.wickIdx;
-  }
-  if (hoveredWickIdx !== null) {
+  const t = I18N[lang];
+  if (hoverTarget) {
     reticle.classList.add('hot');
-    hint.textContent = I18N[lang].hintWick(hoveredWickIdx);
+    if (hoverTarget.kind === 'wick') hint.textContent = t.hintWick(hoverTarget.idx);
+    else if (hoverTarget.kind === 'dreidel') hint.textContent = t.hintDreidel;
+    else if (hoverTarget.kind === 'plate') hint.textContent = t.hintPlate;
+    else if (hoverTarget.kind === 'siddur') hint.textContent = t.hintSiddur(siddurTargetOpen);
     hint.classList.add('visible');
   } else {
     reticle.classList.remove('hot');
-    const drHits = raycaster.intersectObjects(dreidels.map((d) => d.mesh), true);
-    if (drHits.length > 0) {
-      let obj = drHits[0].object;
-      while (obj.parent && !dreidels.some((d) => d.mesh === obj)) obj = obj.parent;
-      hoveredDreidel = dreidels.find((d) => d.mesh === obj) || null;
-      hint.textContent = I18N[lang].hintDreidel;
-      hint.classList.add('visible');
-    } else {
-      hint.classList.remove('visible');
-    }
+    hint.classList.remove('visible');
   }
 
-  // FPV Right Hand Animation (Self Mode)
-  if (handRoot && playMode === 'self' && !renderer.xr.isPresenting) {
-    const restLocal = new THREE.Vector3(0.24 + pointerNDC.x * 0.05, -0.17 + pointerNDC.y * 0.04 + Math.sin(now * 2.1) * 0.005, -0.44);
-    if (shamashReachAnim) {
-      const elapsed = now - shamashReachAnim.start;
-      const p = Math.min(1.0, elapsed / shamashReachAnim.duration);
-      const w = wicks.find((x) => x.idx === shamashReachAnim.wickIdx);
-      if (w) {
-        const targetWorld = new THREE.Vector3();
-        w.flame.getWorldPosition(targetWorld);
-        const targetCamFlame = camera.worldToLocal(targetWorld.add(new THREE.Vector3(0, 0.01, 0.01)));
-        const targetHandLocal = targetCamFlame.sub(handShamashLocalTip);
-        handRoot.position.lerpVectors(restLocal, targetHandLocal, Math.sin(p * Math.PI));
-        if (p >= 0.48 && !shamashReachAnim.litTriggered) {
-          shamashReachAnim.litTriggered = true;
-          igniteWickImmediate(shamashReachAnim.wickIdx, true);
-        }
+  // Real Human Hand Animation (Holding Chamach OR Eating Sufganiya!)
+  if (handRoot && handRoot.visible && !renderer.xr.isPresenting) {
+    if (eatingState.active) {
+      if (eatingState.shakeT > 0) eatingState.shakeT = Math.max(0, eatingState.shakeT - dt);
+      const biteLift = Math.sin((eatingState.shakeT / 0.28) * Math.PI);
+      const tgtPos = new THREE.Vector3(
+        0.10 - biteLift * 0.03,
+        -0.11 + biteLift * 0.045 + Math.sin(now * 2.2) * 0.003,
+        -0.27 + biteLift * 0.05
+      );
+      handRoot.position.lerp(tgtPos, 0.22);
+      handRoot.rotation.set(0.18 + biteLift * 0.14, -0.34, 0.10);
+    } else if (shamashReachAnim) {
+      shamashReachAnim.t += dt;
+      const p = Math.min(1, shamashReachAnim.t / shamashReachAnim.dur);
+      const arc = Math.sin(p * Math.PI);
+      const wObj = wicks.find((x) => x.idx === shamashReachAnim.widx);
+      const tgtWorld = new THREE.Vector3();
+      wObj.flame.getWorldPosition(tgtWorld);
+      const tgtCam = camera.worldToLocal(tgtWorld.clone());
+      handRoot.position.set(
+        THREE.MathUtils.lerp(0.22, tgtCam.x + 0.03, arc),
+        THREE.MathUtils.lerp(-0.18, tgtCam.y - 0.14, arc),
+        THREE.MathUtils.lerp(-0.42, tgtCam.z + 0.11, arc)
+      );
+      handRoot.rotation.set(0.06 - 0.18 * arc, -0.18, 0.04);
+      if (p >= 0.48 && !shamashReachAnim.ignited) {
+        shamashReachAnim.ignited = true;
+        igniteWickImmediate(shamashReachAnim.widx, true);
       }
-      if (p >= 1.0) shamashReachAnim = null;
+      if (p >= 1) shamashReachAnim = null;
     } else {
-      handRoot.position.lerp(restLocal, 0.14);
+      const restPos = new THREE.Vector3(0.22 + Math.sin(now * 1.1) * 0.004, -0.18 + Math.sin(now * 1.9) * 0.005, -0.42);
+      handRoot.position.lerp(restPos, 0.16);
+      handRoot.rotation.set(0.06, -0.18, 0.04);
     }
   }
 
-  // Flames flicker + Halos + Dreidels + Sparks + Embers
+  // Flicker Flames & Halos
   const nextIdx = getNextSuggestedIdx();
   for (const w of wicks) {
     if (w.lit) {
       const ph = w.flame.userData.phase;
       w.flame.scale.set(1 + 0.09 * Math.cos(now * 6.3 + ph), 1 + 0.15 * Math.sin(now * 8.5 + ph), 1);
       w.flame.rotation.z = 0.06 * Math.sin(now * 5.2 + ph);
-      if (w.flame.userData.light) w.flame.userData.light.intensity = 0.95 + 0.16 * Math.sin(now * 10.0 + ph);
+      if (w.flame.userData.light) w.flame.userData.light.intensity = 1.0 + 0.16 * Math.sin(now * 10.0 + ph);
     } else if (playMode === 'self') {
       const isNext = w.idx === nextIdx;
-      w.halo.material.opacity = isNext ? (0.55 + 0.40 * Math.sin(now * 4.5)) : 0.22;
+      w.halo.material.opacity = isNext ? (0.55 + 0.40 * Math.sin(now * 4.5)) : 0.20;
       const hs = isNext ? (1.12 + 0.18 * Math.sin(now * 4.5)) : 0.85;
       w.halo.scale.set(hs, hs, 1);
     }
@@ -1195,7 +1429,7 @@ renderer.setAnimationLoop(() => {
   if (personIgniteFlame && personIgniteCandle?.visible) {
     personIgniteFlame.scale.set(1, 1 + 0.14 * Math.sin(now * 9.0), 1);
   }
-  if (handFlame && handRoot?.visible) {
+  if (handFlame && handChamashGroup?.visible) {
     handFlame.scale.set(1, 1 + 0.14 * Math.sin(now * 9.0), 1);
   }
 

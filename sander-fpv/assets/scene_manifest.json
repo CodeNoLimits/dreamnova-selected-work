@@ -60,9 +60,9 @@
   ],
   "dreidel_base_y": 0.0,
   "fpv_shamash_flame_local": [
-    -0.008,
-    0.197,
-    -0.1281
+    0.0,
+    0.1893,
+    -0.0912
   ],
   "person_bones": [
     "Hips",
@@ -79,5 +79,15 @@
     "RightArm",
     "RightForeArm",
     "RightHand"
+  ],
+  "siddur_table_pos": [
+    -0.46,
+    0.5429,
+    -1.68
+  ],
+  "plate_table_pos": [
+    0.54,
+    0.5429,
+    -1.78
   ]
 }
