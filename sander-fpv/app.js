@@ -118,7 +118,7 @@ function applyCameraRotation() {
 }
 applyCameraRotation();
 
-// Cinema Postprocessing Pipeline: RenderPass -> N8AO Contact AO -> Bloom + 35mm Grain + Vignette + AgX
+// Cinema Postprocessing Pipeline: RenderPass -> Denoised N8AO -> Soft Bloom + Vignette + AgX
 const composer = new EffectComposer(renderer, { frameBufferType: THREE.HalfFloatType });
 const renderPass = new RenderPass(scene, camera);
 composer.addPass(renderPass);
@@ -126,10 +126,13 @@ composer.addPass(renderPass);
 let n8aoPass = null;
 try {
   n8aoPass = new N8AOPostPass(scene, camera, window.innerWidth, window.innerHeight);
-  n8aoPass.configuration.aoRadius = 0.48;
-  n8aoPass.configuration.distanceFalloff = 0.9;
-  n8aoPass.configuration.intensity = 1.85;
-  n8aoPass.configuration.halfRes = true;
+  n8aoPass.configuration.aoRadius = 0.44;
+  n8aoPass.configuration.distanceFalloff = 0.85;
+  n8aoPass.configuration.intensity = 1.40;
+  n8aoPass.configuration.aoSamples = 16;
+  n8aoPass.configuration.denoiseSamples = 8;
+  n8aoPass.configuration.denoiseRadius = 12;
+  n8aoPass.configuration.halfRes = false;
   composer.addPass(n8aoPass);
 } catch (err) {
   console.warn('N8AO disabled gracefully:', err);
@@ -138,24 +141,20 @@ try {
 const bloomEffect = new BloomEffect({
   blendFunction: BlendFunction.ADD,
   mipmapBlur: true,
-  luminanceThreshold: 0.86,
-  luminanceSmoothing: 0.28,
-  intensity: 0.44
-});
-const noiseEffect = new NoiseEffect({
-  blendFunction: BlendFunction.COLOR_DODGE,
-  opacity: 0.024
+  luminanceThreshold: 0.92,
+  luminanceSmoothing: 0.25,
+  intensity: 0.26
 });
 const vignetteEffect = new VignetteEffect({
   eskil: false,
   offset: 0.34,
-  darkness: 0.42
+  darkness: 0.48
 });
 const toneMappingEffect = new ToneMappingEffect({
   mode: ToneMappingMode.AGX
 });
 
-const cinematicPass = new EffectPass(camera, bloomEffect, noiseEffect, vignetteEffect, toneMappingEffect);
+const cinematicPass = new EffectPass(camera, bloomEffect, vignetteEffect, toneMappingEffect);
 composer.addPass(cinematicPass);
 
 // HDRI Environment IBL
@@ -166,7 +165,7 @@ new RGBELoader().load(
   (hdrTex) => {
     const envRT = pmremGen.fromEquirectangular(hdrTex);
     scene.environment = envRT.texture;
-    scene.environmentIntensity = 0.68;
+    scene.environmentIntensity = 0.36;
     hdrTex.dispose();
     pmremGen.dispose();
   },
@@ -174,11 +173,11 @@ new RGBELoader().load(
   () => { pmremGen.dispose(); }
 );
 
-// Cinema Lighting Complementing Cycles Lightmap GI
-const hemi = new THREE.HemisphereLight(0x88b0f2, 0x3b2715, 0.48);
+// Cinema Lighting Complementing Cycles Lightmap GI (rich contrast, warm Menorah vs sapphire night)
+const hemi = new THREE.HemisphereLight(0x7ca6eb, 0x2c1c0f, 0.22);
 scene.add(hemi);
 
-const moonLight = new THREE.DirectionalLight(0x8bb4ff, 1.45);
+const moonLight = new THREE.DirectionalLight(0x84afff, 0.92);
 moonLight.position.set(0.6, 3.8, -6.5);
 moonLight.target.position.set(0, 0.8, -1.7);
 moonLight.castShadow = true;
@@ -192,25 +191,25 @@ moonLight.shadow.camera.bottom = -1.5;
 moonLight.shadow.bias = -0.0005;
 scene.add(moonLight, moonLight.target);
 
-const chandelierLight = new THREE.PointLight(0xffbc6e, 3.6, 12, 1.4);
+const chandelierLight = new THREE.PointLight(0xffb868, 1.75, 11, 1.5);
 chandelierLight.position.set(0, 3.15, -0.25);
 chandelierLight.castShadow = true;
 chandelierLight.shadow.mapSize.set(512, 512);
 chandelierLight.shadow.bias = -0.001;
 scene.add(chandelierLight);
 
-const personKeyLight = new THREE.SpotLight(0xffcb86, 3.2, 8, Math.PI / 4, 0.55, 1.3);
+const personKeyLight = new THREE.SpotLight(0xffca84, 2.1, 8, Math.PI / 4, 0.55, 1.4);
 personKeyLight.position.set(0.85, 2.35, -1.15);
 personKeyLight.target.position.set(0.24, 1.35, -2.30);
 personKeyLight.castShadow = true;
 personKeyLight.shadow.mapSize.set(512, 512);
 scene.add(personKeyLight, personKeyLight.target);
 
-const balconyLanternLight = new THREE.PointLight(0xffb55c, 2.8, 7.5, 1.6);
+const balconyLanternLight = new THREE.PointLight(0xffb55c, 2.2, 7.5, 1.6);
 balconyLanternLight.position.set(1.35, 2.55, -4.85);
 scene.add(balconyLanternLight);
 
-const siddurSpotLight = new THREE.SpotLight(0xffe0a8, 1.8, 3.5, Math.PI / 5, 0.65, 1.2);
+const siddurSpotLight = new THREE.SpotLight(0xffe0a8, 0.45, 3.0, Math.PI / 5, 0.70, 1.3);
 siddurSpotLight.position.set(-0.46, 1.45, -1.35);
 siddurSpotLight.target.position.set(-0.46, 0.56, -1.68);
 scene.add(siddurSpotLight, siddurSpotLight.target);
@@ -550,7 +549,7 @@ function setCameraView(preset, smooth = true) {
   } else if (preset === 'window') {
     tx = -0.92; tz = -2.65; tyaw = -0.62; tpitch = -0.14;
   } else if (preset === 'siddur') {
-    tx = -0.44; tz = -1.16; tyaw = 0.04; tpitch = -0.78;
+    tx = -0.45; tz = -1.28; tyaw = 0.02; tpitch = -0.96;
   }
   if (!smooth) {
     camTween = null;
@@ -721,7 +720,7 @@ async function initAssets() {
         o.material.depthWrite = false;
       } else if (lightMapTex && o.geometry?.attributes?.uv1 && o.material && !o.name.includes('fancy_picture_frame')) {
         o.material.lightMap = lightMapTex;
-        o.material.lightMapIntensity = 1.05;
+        o.material.lightMapIntensity = 0.42;
         o.material.needsUpdate = true;
       }
     }
@@ -772,8 +771,8 @@ async function initAssets() {
   plateRoot.traverse((o) => { if (o.isMesh) o.userData.interactiveKind = 'plate'; });
   scene.add(plateRoot);
 
-  // Grounded Spinning Dreidels
-  for (const [dx, dz, rot] of [[-0.64, -1.58, 0.3], [-0.46, -1.52, 1.1], [0.42, -1.54, 2.2]]) {
+  // Grounded Spinning Dreidels (clear of the open Siddur pages)
+  for (const [dx, dz, rot] of [[-0.78, -1.60, 0.3], [-0.72, -1.78, 1.1], [0.36, -1.56, 2.2]]) {
     const clone = drG.scene.clone(true);
     clone.position.set(dx, tableTopY, dz);
     clone.rotation.y = rot;
@@ -903,7 +902,7 @@ async function initAssets() {
   handRoot.add(handChamashGroup);
 
   handSufganiyaGroup = new THREE.Group();
-  handSufganiyaGroup.position.set(-0.01, 0.032, -0.02);
+  handSufganiyaGroup.position.set(0.005, 0.018, -0.028);
   handSufganiyaGroup.rotation.set(0.32, -0.35, 0.1);
   for (const sg of [sb0, sb1, sb2]) {
     enableShadows(sg.scene, false);
@@ -914,8 +913,8 @@ async function initAssets() {
   handSufganiyaGroup.visible = false;
   handRoot.add(handSufganiyaGroup);
 
-  handRoot.position.set(0.22, -0.18, -0.42);
-  handRoot.rotation.set(0.06, -0.18, 0.04);
+  handRoot.position.set(0.24, -0.20, -0.48);
+  handRoot.rotation.set(0.24, -0.44, 0.14);
   handRoot.visible = false;
   camera.add(handRoot);
 
@@ -1378,12 +1377,12 @@ renderer.setAnimationLoop(() => {
       if (eatingState.shakeT > 0) eatingState.shakeT = Math.max(0, eatingState.shakeT - dt);
       const biteLift = Math.sin((eatingState.shakeT / 0.28) * Math.PI);
       const tgtPos = new THREE.Vector3(
-        0.10 - biteLift * 0.03,
-        -0.11 + biteLift * 0.045 + Math.sin(now * 2.2) * 0.003,
-        -0.27 + biteLift * 0.05
+        0.13 - biteLift * 0.03,
+        -0.13 + biteLift * 0.04 + Math.sin(now * 2.2) * 0.003,
+        -0.34 + biteLift * 0.05
       );
       handRoot.position.lerp(tgtPos, 0.22);
-      handRoot.rotation.set(0.18 + biteLift * 0.14, -0.34, 0.10);
+      handRoot.rotation.set(0.26 + biteLift * 0.12, -0.46, 0.14);
     } else if (shamashReachAnim) {
       shamashReachAnim.t += dt;
       const p = Math.min(1, shamashReachAnim.t / shamashReachAnim.dur);
@@ -1393,20 +1392,20 @@ renderer.setAnimationLoop(() => {
       wObj.flame.getWorldPosition(tgtWorld);
       const tgtCam = camera.worldToLocal(tgtWorld.clone());
       handRoot.position.set(
-        THREE.MathUtils.lerp(0.22, tgtCam.x + 0.03, arc),
-        THREE.MathUtils.lerp(-0.18, tgtCam.y - 0.14, arc),
-        THREE.MathUtils.lerp(-0.42, tgtCam.z + 0.11, arc)
+        THREE.MathUtils.lerp(0.24, tgtCam.x + 0.03, arc),
+        THREE.MathUtils.lerp(-0.20, tgtCam.y - 0.14, arc),
+        THREE.MathUtils.lerp(-0.48, tgtCam.z + 0.11, arc)
       );
-      handRoot.rotation.set(0.06 - 0.18 * arc, -0.18, 0.04);
+      handRoot.rotation.set(0.24 - 0.18 * arc, -0.44, 0.14);
       if (p >= 0.48 && !shamashReachAnim.ignited) {
         shamashReachAnim.ignited = true;
         igniteWickImmediate(shamashReachAnim.widx, true);
       }
       if (p >= 1) shamashReachAnim = null;
     } else {
-      const restPos = new THREE.Vector3(0.22 + Math.sin(now * 1.1) * 0.004, -0.18 + Math.sin(now * 1.9) * 0.005, -0.42);
+      const restPos = new THREE.Vector3(0.24 + Math.sin(now * 1.1) * 0.004, -0.20 + Math.sin(now * 1.9) * 0.005, -0.48);
       handRoot.position.lerp(restPos, 0.16);
-      handRoot.rotation.set(0.06, -0.18, 0.04);
+      handRoot.rotation.set(0.24, -0.44, 0.14);
     }
   }
 
