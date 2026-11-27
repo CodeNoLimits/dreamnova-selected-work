@@ -206,11 +206,22 @@ function buildSalonAnd3DJerusalemExterior() {
     roughness: 0.48
   });
   const rugMat = new THREE.MeshStandardMaterial({ map: loadTex('persian_rug_pbr.jpg', 1, 1, true), roughness: 0.92 });
-  const velvetMat = new THREE.MeshStandardMaterial({ color: 0x0b1633, roughness: 0.88, sheen: 0.70 });
+  const velvetMat = new THREE.MeshStandardMaterial({
+    color: 0x1c2d57,
+    roughness: 0.72,
+    metalness: 0.04,
+    sheen: 0.9,
+    sheenColor: new THREE.Color(0x6d8fd1)
+  });
   const brassMat = new THREE.MeshStandardMaterial({ color: 0xd9a23a, metalness: 0.94, roughness: 0.20 });
-  const ironMat = new THREE.MeshStandardMaterial({ color: 0x16181f, metalness: 0.85, roughness: 0.42 });
+  const casementWoodMat = new THREE.MeshStandardMaterial({
+    map: loadTex('walnut_diff.jpg', 1, 1, true),
+    normalMap: loadTex('walnut_nor.jpg', 1, 1, false),
+    color: 0x8f623d,
+    roughness: 0.46
+  });
   const glassPaneMat = new THREE.MeshPhysicalMaterial({
-    color: 0xdbe9ff, transparent: true, opacity: 0.16, roughness: 0.06, metalness: 0.0, transmission: 0.65, side: THREE.DoubleSide
+    color: 0xdbe9ff, transparent: true, opacity: 0.12, roughness: 0.05, metalness: 0.05, side: THREE.DoubleSide
   });
 
   // Floor & Rug (receive shadows!)
@@ -262,16 +273,25 @@ function buildSalonAnd3DJerusalemExterior() {
     scene.add(v);
   }
 
-  // Hinged Casement Window Leaves swung open inward/outward with Glass & Wrought Iron Bars
+  // Hinged Casement Window Leaves swung open outward with transparent glass & perimeter walnut frames
   for (const side of [-1, 1]) {
     const hinge = new THREE.Group();
-    hinge.position.set(side * 1.14, 2.05, -4.16);
-    hinge.rotation.y = side * -1.12; // swung open outward over balcony
-    const frame = new THREE.Mesh(new THREE.BoxGeometry(0.95, 2.05, 0.045), ironMat);
-    frame.position.x = -side * 0.47;
-    const glass = new THREE.Mesh(new THREE.PlaneGeometry(0.88, 1.95), glassPaneMat);
-    glass.position.x = -side * 0.47;
-    hinge.add(frame, glass);
+    hinge.position.set(side * 1.15, 2.04, -4.18);
+    hinge.rotation.y = side * -1.18; // swung open outward over 3D balcony
+    const cx = -side * 0.45;
+    const stileIn = new THREE.Mesh(new THREE.BoxGeometry(0.055, 2.02, 0.05), casementWoodMat);
+    stileIn.position.x = -side * 0.025;
+    const stileOut = new THREE.Mesh(new THREE.BoxGeometry(0.055, 2.02, 0.05), casementWoodMat);
+    stileOut.position.x = -side * 0.875;
+    const railTop = new THREE.Mesh(new THREE.BoxGeometry(0.90, 0.06, 0.05), casementWoodMat);
+    railTop.position.set(cx, 0.98, 0);
+    const railMid = new THREE.Mesh(new THREE.BoxGeometry(0.86, 0.04, 0.045), casementWoodMat);
+    railMid.position.set(cx, 0.05, 0);
+    const railBot = new THREE.Mesh(new THREE.BoxGeometry(0.90, 0.06, 0.05), casementWoodMat);
+    railBot.position.set(cx, -0.98, 0);
+    const glass = new THREE.Mesh(new THREE.PlaneGeometry(0.82, 1.90), glassPaneMat);
+    glass.position.x = cx;
+    hinge.add(stileIn, stileOut, railTop, railMid, railBot, glass);
     scene.add(hinge);
   }
 
@@ -290,16 +310,17 @@ function buildSalonAnd3DJerusalemExterior() {
   vault.position.set(0, 2.75, 0);
   scene.add(vault);
 
-  // Velvet Curtains + Brass Rod
-  const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 3.1, 14), brassMat);
+  // Velvet Curtains + Brass Rod (drawn wide beside the stone arch so window view stays open)
+  const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 3.4, 14), brassMat);
   rod.rotation.z = Math.PI / 2;
   rod.position.set(0, 3.50, -3.56);
   scene.add(rod);
-  for (const bx of [-1.28, 1.28]) {
+  for (const bx of [-1.42, 1.42]) {
     for (let i = 0; i < 4; i++) {
-      const c = new THREE.Mesh(new THREE.CylinderGeometry(0.068, 0.075, 2.62, 12), velvetMat);
-      c.position.set(bx - 0.14 + i * 0.09, 2.18, -3.56 - (i % 2) * 0.03);
+      const c = new THREE.Mesh(new THREE.CylinderGeometry(0.058, 0.066, 2.62, 12), velvetMat);
+      c.position.set(bx - 0.11 + i * 0.075, 2.18, -3.56 - (i % 2) * 0.025);
       c.castShadow = true;
+      c.receiveShadow = true;
       scene.add(c);
     }
   }
@@ -358,9 +379,21 @@ function buildSalonAnd3DJerusalemExterior() {
     scene.add(cyMesh);
   }
 
-  // Far Night Sky Panoramic Cyclorama + Soft Starfield
-  const skyGeo = new THREE.CylinderGeometry(28, 28, 22, 32, 1, true, Math.PI * 0.72, Math.PI * 0.56);
-  const skyMat = new THREE.MeshBasicMaterial({ map: loadTex('jerusalem_night_backdrop.jpg', 1, 1, true), side: THREE.BackSide });
+  // Far Night Sky Panoramic Cyclorama with soft feathered alpha edge into night sky
+  const skyAlphaCanvas = document.createElement('canvas');
+  skyAlphaCanvas.width = 256; skyAlphaCanvas.height = 128;
+  const sCtx = skyAlphaCanvas.getContext('2d');
+  const hg = sCtx.createLinearGradient(0, 0, 256, 0);
+  hg.addColorStop(0.0, 'black'); hg.addColorStop(0.14, 'white'); hg.addColorStop(0.86, 'white'); hg.addColorStop(1.0, 'black');
+  sCtx.fillStyle = hg; sCtx.fillRect(0, 0, 256, 128);
+  const skyAlphaTex = new THREE.CanvasTexture(skyAlphaCanvas);
+  const skyGeo = new THREE.CylinderGeometry(28, 28, 22, 40, 1, true, Math.PI * 0.52, Math.PI * 0.96);
+  const skyMat = new THREE.MeshBasicMaterial({
+    map: loadTex('jerusalem_night_backdrop.jpg', 1, 1, true),
+    alphaMap: skyAlphaTex,
+    transparent: true,
+    side: THREE.BackSide
+  });
   const sky = new THREE.Mesh(skyGeo, skyMat);
   sky.position.set(0, 4.2, -2.0);
   scene.add(sky);
@@ -465,9 +498,17 @@ let handShamashLocalTip = new THREE.Vector3(-0.008, 0.197, -0.1281);
 let personScene = null;
 let personBones = {};
 let personBoneRest = {};
+let personBoneCharRestWorld = {};
 let personIgniteCandle = null;
 let personIgniteFlame = null;
 let sceneTime = 0; // seconds into character narrative (0..26)
+
+function clearSparkBursts() {
+  for (let i = sparkBursts.length - 1; i >= 0; i--) {
+    scene.remove(sparkBursts[i].pts);
+  }
+  sparkBursts.length = 0;
+}
 
 let shamashReachAnim = null;
 let pointerNDC = new THREE.Vector2(0, 0);
@@ -530,6 +571,7 @@ function igniteWickImmediate(idx, withSound = true) {
 
 function resetAllWicks() {
   shamashReachAnim = null;
+  clearSparkBursts();
   for (const w of wicks) {
     w.lit = false;
     w.flame.visible = false;
@@ -550,14 +592,9 @@ function setPlayMode(mode) {
   document.getElementById('btn-ignite-next').style.display = mode === 'self' ? '' : 'none';
 
   if (personScene) {
-    if (mode === 'character') {
-      personScene.position.set(0.38, 0, -2.42);
-      personScene.rotation.set(0, 0, 0);
-    } else {
-      // Polite host steps gently aside by the right console while user lights in first person
-      personScene.position.set(1.75, 0, -2.55);
-      personScene.rotation.set(0, -0.55, 0);
-    }
+    personScene.visible = (mode === 'character');
+    personScene.position.set(0.24, 0, -2.30);
+    personScene.rotation.set(0, 0, 0);
   }
   if (handRoot) handRoot.visible = (mode === 'self');
   resetAllWicks();
@@ -579,8 +616,19 @@ function setCameraView(preset) {
   applyCameraRotation();
 }
 
-// Helper to rotate imported bone cleanly around an offset Euler relative to its saved bind pose
-function poseBone(name, rx, ry, rz) {
+// Rotate imported bone cleanly in character space (+X=Left, +Y=Up, +Z=Front)
+function poseBoneChar(name, rx, ry, rz) {
+  const b = personBones[name];
+  const rest = personBoneRest[name];
+  const restW = personBoneCharRestWorld[name];
+  if (!b || !rest || !restW) return;
+  const qChar = new THREE.Quaternion().setFromEuler(new THREE.Euler(rx, ry, rz, 'XYZ'));
+  const qOff = restW.clone().invert().multiply(qChar).multiply(restW);
+  b.quaternion.copy(rest).multiply(qOff);
+}
+
+// Rotate imported bone in its own bind-pose local axes (ideal for ForeArm elbow hinge & Hand)
+function poseBoneLocal(name, rx, ry, rz) {
   const b = personBones[name];
   const rest = personBoneRest[name];
   if (!b || !rest) return;
@@ -701,30 +749,37 @@ async function initAssets() {
 
   // Realistic Rigged Person + Velvet Kippa + Held Shamash Candle
   personScene = persG.scene;
-  personScene.position.set(0.38, 0, -2.42);
+  personScene.position.set(0, 0, 0);
+  personScene.rotation.set(0, 0, 0);
   enableShadows(personScene);
+  scene.add(personScene);
+  personScene.updateMatrixWorld(true);
   personScene.traverse((o) => {
     if (o.isBone) {
       personBones[o.name] = o;
       personBoneRest[o.name] = o.quaternion.clone();
+      personBoneCharRestWorld[o.name] = o.getWorldQuaternion(new THREE.Quaternion());
     }
   });
-  scene.add(personScene);
+  personScene.position.set(0.24, 0, -2.30);
 
-  // Attach glowing 16cm Shamash taper candle to character's RightHand
+  // Attach glowing 16cm Shamash taper candle oriented cleanly out of character's RightHand fingers
   if (personBones.RightHand) {
     personIgniteCandle = new THREE.Group();
     const wax = new THREE.Mesh(
       new THREE.CylinderGeometry(0.008, 0.009, 0.16, 12),
       new THREE.MeshStandardMaterial({ color: 0xf4cc6c, roughness: 0.35 })
     );
-    wax.rotation.x = Math.PI / 2;
-    wax.position.set(0, 0.02, 0.06);
+    wax.position.set(0, 0.08, 0);
     personIgniteCandle.add(wax);
     personIgniteFlame = createFlameGroup(true, 1.1);
-    personIgniteFlame.position.set(0, 0.02, 0.145);
+    personIgniteFlame.position.set(0, 0.165, 0);
     personIgniteCandle.add(personIgniteFlame);
-    personIgniteCandle.position.set(0.02, 0.03, 0.02);
+    personIgniteCandle.quaternion.setFromUnitVectors(
+      new THREE.Vector3(0, 1, 0),
+      new THREE.Vector3(0.36, 0.86, 0.08).normalize()
+    );
+    personIgniteCandle.position.set(0.015, 0.045, 0.015);
     personBones.RightHand.add(personIgniteCandle);
   }
 
@@ -772,97 +827,140 @@ const CHAR_IGNITE_TIMES = [
 
 function updateCharacterTimeline(dt, now) {
   if (!personScene) return;
-
-  // Always keep LeftArm lowered out of T-pose
-  poseBone('LeftShoulder', 0, 0, 0.14);
-  poseBone('LeftArm', 0.10, 0.08, 1.18);
-  poseBone('LeftForeArm', 0.25, 0, 0.18);
-
   if (playMode !== 'character') {
-    poseBone('RightShoulder', 0, 0, -0.14);
-    poseBone('RightArm', 0.10, -0.08, -1.18);
-    poseBone('RightForeArm', 0.25, 0, -0.18);
-    poseBone('Spine1', 0.02, 0, 0);
-    poseBone('Head', 0.14, 0.35, 0);
+    personScene.visible = false;
     if (personIgniteCandle) personIgniteCandle.visible = false;
     return;
   }
+  personScene.visible = true;
 
-  sceneTime = Math.min(26.0, sceneTime + dt);
+  sceneTime = Math.min(27.0, sceneTime + dt);
   const t = sceneTime;
 
+  // Reset leg stride unless walking
+  poseBoneChar('LeftUpLeg', 0, 0, 0);
+  poseBoneChar('RightUpLeg', 0, 0, 0);
+
   if (t < 15.0) {
-    // Phase 1: Lighting each candle one by one in order!
+    // Phase 1: Stand behind table facing +Z, light each cup cleanly in Halachic order
     if (personIgniteCandle) personIgniteCandle.visible = true;
     for (const [ti, widx] of CHAR_IGNITE_TIMES) {
       if (t >= ti) igniteWickImmediate(widx, true);
     }
     const active = CHAR_IGNITE_TIMES.reduce((acc, pair) => (t >= pair[0] - 0.8 ? pair : acc), CHAR_IGNITE_TIMES[0]);
     const cupX = (active[1] - 4) * 0.07;
-    const bob = Math.sin(t * 2.4) * 0.06;
+    const bob = Math.sin(t * 2.5) * 0.05;
 
-    personScene.position.set(0.38 + cupX * 0.35, 0, -2.42);
+    personScene.position.set(0.24 + cupX * 0.32, 0, -2.30);
     personScene.rotation.set(0, 0, 0);
 
-    poseBone('Spine1', 0.08, -cupX * 0.25, 0);
-    poseBone('Head', 0.24, -cupX * 0.45, 0);
-    poseBone('RightShoulder', 0, 0, -0.10);
-    poseBone('RightArm', -0.58 + bob, 0.35 - cupX * 0.85, -0.78);
-    poseBone('RightForeArm', -0.45 - bob, 0, -0.35);
-    poseBone('RightHand', 0.25, 0, 0.15);
+    poseBoneChar('Spine1', 0.10, -cupX * 0.25, 0);
+    poseBoneChar('Head', 0.24, -cupX * 0.42, 0);
+    // Left arm rests naturally beside waist
+    poseBoneChar('LeftArm', 0.10, 0.0, -1.25);
+    poseBoneLocal('LeftForeArm', 0, 0, 0.35);
+    // Right arm extends smoothly forward & down to cup height (y~1.03, z~-1.90)
+    poseBoneChar('RightArm', -0.32 + bob, 0.16 - cupX * 0.72, 1.16);
+    poseBoneLocal('RightForeArm', 0, 0, -0.58 - bob);
 
     menorahGroup.position.copy(MENORAH_REST_POS);
     menorahGroup.rotation.set(0, 0, 0);
-  } else if (t < 16.8) {
-    // Phase 2: Extinguish taper & place both hands gently around the Menorah stem
+  } else if (t < 16.6) {
+    // Phase 2: Reach both hands around the Hanoukia stem and lift smoothly off the table
     if (personIgniteCandle) personIgniteCandle.visible = false;
-    const p = (t - 15.0) / 1.8;
-    personScene.position.set(THREE.MathUtils.lerp(0.38, 0.12, p), 0, THREE.MathUtils.lerp(-2.42, -2.35, p));
-    poseBone('Spine1', THREE.MathUtils.lerp(0.08, 0.14, p), 0, 0);
-    poseBone('Head', 0.24, 0, 0);
-    poseBone('RightArm', -0.65, 0.38, -0.75);
-    poseBone('RightForeArm', -0.40, 0, -0.35);
-    poseBone('LeftArm', -0.65, -0.38, 0.75);
-    poseBone('LeftForeArm', -0.40, 0, 0.35);
-  } else if (t < 22.8) {
-    // Phase 3: Lift lit Menorah & walk smoothly toward the arched Jerusalem window!
+    const p = (t - 15.0) / 1.6;
+    const sp = p * p * (3 - 2 * p);
+    const px = THREE.MathUtils.lerp(0.24, 0.0, sp);
+    const pz = -2.30;
+    personScene.position.set(px, 0, pz);
+    personScene.rotation.set(0, 0, 0);
+
+    poseBoneChar('Spine1', 0.08, 0, 0);
+    poseBoneChar('Head', 0.20, 0, 0);
+    poseBoneChar('LeftArm', -0.28, -0.35, -1.22);
+    poseBoneLocal('LeftForeArm', 0, 0, 0.92);
+    poseBoneChar('RightArm', -0.28, 0.35, 1.22);
+    poseBoneLocal('RightForeArm', 0, 0, -0.92);
+
+    const my = THREE.MathUtils.lerp(tableTopY, 0.96, sp);
+    menorahGroup.position.set(0, my, -1.90);
+    menorahGroup.rotation.set(0, 0, 0);
+  } else if (t < 18.6) {
+    // Phase 3a: Pivot smoothly to face the arched Jerusalem window (-Z) keeping Menorah centered in front of chest
     if (personIgniteCandle) personIgniteCandle.visible = false;
-    const p = (t - 16.8) / 6.0;
-    const smoothP = p * p * (3 - 2 * p);
-    const walkBob = Math.sin(p * Math.PI * 8) * 0.014;
-    const pz = THREE.MathUtils.lerp(-2.35, -3.26, smoothP);
-    const mz = THREE.MathUtils.lerp(-1.90, -3.72, smoothP);
-    const liftArc = Math.sin(smoothP * Math.PI) * 0.24;
-    const my = THREE.MathUtils.lerp(tableTopY, MENORAH_WINDOW_POS.y, smoothP) + liftArc;
+    const p = (t - 16.6) / 2.0;
+    const sp = p * p * (3 - 2 * p);
+    const rotY = THREE.MathUtils.lerp(0.0, Math.PI, sp);
+    const px = 0.0;
+    const pz = THREE.MathUtils.lerp(-2.30, -2.42, sp);
 
-    personScene.position.set(THREE.MathUtils.lerp(0.12, 0.34, smoothP), walkBob, pz);
-    personScene.rotation.set(0, THREE.MathUtils.lerp(0.0, 2.72, smoothP), 0); // turns smoothly toward window!
-    menorahGroup.position.set(0, my, mz);
+    personScene.position.set(px, 0, pz);
+    personScene.rotation.set(0, rotY, 0);
 
-    // Subtle leg stride while walking toward the window
-    const stride = Math.sin(p * Math.PI * 8) * 0.28;
-    poseBone('LeftUpLeg', -stride, 0, 0);
-    poseBone('RightUpLeg', stride, 0, 0);
+    poseBoneChar('Spine1', 0.05, 0, 0);
+    poseBoneChar('Head', 0.16, 0, 0);
+    poseBoneChar('LeftArm', -0.30, -0.35, -1.22);
+    poseBoneLocal('LeftForeArm', 0, 0, 0.92);
+    poseBoneChar('RightArm', -0.30, 0.35, 1.22);
+    poseBoneLocal('RightForeArm', 0, 0, -0.92);
 
-    poseBone('Spine1', 0.05, 0, 0);
-    poseBone('Head', 0.16, 0, 0);
-    poseBone('RightArm', -0.72, 0.35, -0.82);
-    poseBone('RightForeArm', -0.42, 0, -0.25);
-    poseBone('LeftArm', -0.72, -0.35, 0.82);
-    poseBone('LeftForeArm', -0.42, 0, 0.25);
-  } else {
-    // Phase 4: Menorah placed on walnut windowsill overlooking 3D Jerusalem; person stands beside admiring it!
+    menorahGroup.position.set(px + Math.sin(rotY) * 0.40, 0.98, pz + Math.cos(rotY) * 0.40);
+    menorahGroup.rotation.set(0, rotY, 0);
+  } else if (t < 22.4) {
+    // Phase 3b: Walk straight toward the open window with both hands cradling the lit Menorah in front
     if (personIgniteCandle) personIgniteCandle.visible = false;
-    personScene.position.set(0.56, 0, -3.18);
-    personScene.rotation.set(0, 2.55, 0);
+    const p = (t - 18.6) / 3.8;
+    const sp = p * p * (3 - 2 * p);
+    const walkBob = Math.sin(p * Math.PI * 6) * 0.012;
+    const pz = THREE.MathUtils.lerp(-2.42, -3.38, sp);
+    const rotY = Math.PI;
+
+    personScene.position.set(0, walkBob, pz);
+    personScene.rotation.set(0, rotY, 0);
+
+    const stride = Math.sin(p * Math.PI * 6) * 0.26;
+    poseBoneChar('LeftUpLeg', -stride, 0, 0);
+    poseBoneChar('RightUpLeg', stride, 0, 0);
+    poseBoneChar('Spine1', 0.05, 0, 0);
+    poseBoneChar('Head', 0.14, 0, 0);
+    poseBoneChar('LeftArm', -0.30, -0.35, -1.22);
+    poseBoneLocal('LeftForeArm', 0, 0, 0.92);
+    poseBoneChar('RightArm', -0.30, 0.35, 1.22);
+    poseBoneLocal('RightForeArm', 0, 0, -0.92);
+
+    menorahGroup.position.set(0, THREE.MathUtils.lerp(0.98, MENORAH_WINDOW_POS.y, sp) + walkBob * 0.5, pz - 0.40);
+    menorahGroup.rotation.set(0, Math.PI, 0);
+  } else if (t < 23.6) {
+    // Phase 3c: Place Menorah gently onto walnut windowsill & step back-right respectfully
+    if (personIgniteCandle) personIgniteCandle.visible = false;
+    const p = (t - 22.4) / 1.2;
+    const sp = p * p * (3 - 2 * p);
+    personScene.position.set(THREE.MathUtils.lerp(0, 0.46, sp), 0, THREE.MathUtils.lerp(-3.38, -3.20, sp));
+    personScene.rotation.set(0, THREE.MathUtils.lerp(Math.PI, 2.58, sp), 0);
+
+    poseBoneChar('Spine1', 0.03, 0, 0);
+    poseBoneChar('Head', 0.10, -0.15, 0);
+    poseBoneChar('LeftArm', THREE.MathUtils.lerp(-0.30, 0.12, sp), THREE.MathUtils.lerp(-0.35, 0, sp), -1.24);
+    poseBoneLocal('LeftForeArm', 0, 0, THREE.MathUtils.lerp(0.92, 0.35, sp));
+    poseBoneChar('RightArm', THREE.MathUtils.lerp(-0.30, 0.12, sp), THREE.MathUtils.lerp(0.35, 0, sp), 1.24);
+    poseBoneLocal('RightForeArm', 0, 0, THREE.MathUtils.lerp(-0.92, -0.35, sp));
+
     menorahGroup.position.copy(MENORAH_WINDOW_POS);
-    poseBone('LeftUpLeg', 0, 0, 0);
-    poseBone('RightUpLeg', 0, 0, 0);
-    poseBone('Spine1', 0.02, 0, 0);
-    poseBone('Head', 0.08 + Math.sin(now * 1.1) * 0.02, -0.15, 0);
-    poseBone('RightShoulder', 0, 0, -0.14);
-    poseBone('RightArm', 0.10, -0.08, -1.18);
-    poseBone('RightForeArm', 0.22, 0, -0.15);
+    menorahGroup.rotation.set(0, Math.PI, 0);
+  } else {
+    // Phase 4: Lit Hanoukia stands proudly on walnut windowsill facing Jerusalem 3D skyline
+    if (personIgniteCandle) personIgniteCandle.visible = false;
+    personScene.position.set(0.46, 0, -3.20);
+    personScene.rotation.set(0, 2.58, 0);
+    menorahGroup.position.copy(MENORAH_WINDOW_POS);
+    menorahGroup.rotation.set(0, Math.PI, 0);
+
+    poseBoneChar('Spine1', 0.02, 0, 0);
+    poseBoneChar('Head', 0.08 + Math.sin(now * 1.1) * 0.02, -0.15, 0);
+    poseBoneChar('LeftArm', 0.12, 0, -1.25);
+    poseBoneLocal('LeftForeArm', 0, 0, 0.35);
+    poseBoneChar('RightArm', 0.12, 0, 1.25);
+    poseBoneLocal('RightForeArm', 0, 0, -0.35);
   }
 }
 
@@ -988,9 +1086,11 @@ window.__FPV_DEBUG__ = {
       sceneTime = 8.0;
     } else if (ph === 'carry') {
       for (const [, idx] of CHAR_IGNITE_TIMES) igniteWickImmediate(idx, false);
-      sceneTime = 19.6;
+      clearSparkBursts();
+      sceneTime = 20.4;
     } else if (ph === 'window') {
       for (const [, idx] of CHAR_IGNITE_TIMES) igniteWickImmediate(idx, false);
+      clearSparkBursts();
       sceneTime = 24.5;
     }
     updateCharacterTimeline(0, performance.now() / 1000);
