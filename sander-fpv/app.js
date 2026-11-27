@@ -66,15 +66,15 @@ scene.background = new THREE.Color(0x060913);
 scene.fog = new THREE.FogExp2(0x060913, 0.032);
 
 const playerRig = new THREE.Group();
-playerRig.position.set(0, 0, -0.78);
+playerRig.position.set(0, 0, -0.84);
 scene.add(playerRig);
 
 const camera = new THREE.PerspectiveCamera(64, window.innerWidth / window.innerHeight, 0.04, 50);
-camera.position.set(0, 1.38, 0);
+camera.position.set(0, 1.32, 0);
 playerRig.add(camera);
 
 let yaw = 0.0;
-let pitch = -0.34;
+let pitch = -0.38;
 function applyCameraRotation() {
   if (!renderer.xr.isPresenting) {
     camera.rotation.order = 'YXZ';
@@ -223,12 +223,29 @@ function buildSalonRoom() {
 
 const embers = buildSalonRoom();
 
+// Smooth circular radial glow CanvasTexture so flame halos & sparks NEVER appear as squares!
+function createRadialGlowTexture(innerRgba = 'rgba(255,235,165,0.95)', midRgba = 'rgba(255,155,45,0.45)') {
+  const c = document.createElement('canvas');
+  c.width = 64; c.height = 64;
+  const ctx = c.getContext('2d');
+  const g = ctx.createRadialGradient(32, 32, 2, 32, 32, 31);
+  g.addColorStop(0.0, innerRgba);
+  g.addColorStop(0.35, midRgba);
+  g.addColorStop(1.0, 'rgba(255,120,20,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 64, 64);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+const GLOW_TEX = createRadialGlowTexture();
+
 // Helper to create 3D realistic animated teardrop flame mesh
 function createFlameGroup(withLight = false, scale = 1.0) {
   const g = new THREE.Group();
   const outerGeo = new THREE.ConeGeometry(0.011 * scale, 0.038 * scale, 12);
   outerGeo.translate(0, 0.017 * scale, 0);
-  const outerMat = new THREE.MeshBasicMaterial({ color: 0xff8c1a, transparent: true, opacity: 0.86 });
+  const outerMat = new THREE.MeshBasicMaterial({ color: 0xff8c1a, transparent: true, opacity: 0.88 });
   const outer = new THREE.Mesh(outerGeo, outerMat);
 
   const coreGeo = new THREE.ConeGeometry(0.006 * scale, 0.024 * scale, 10);
@@ -242,13 +259,15 @@ function createFlameGroup(withLight = false, scale = 1.0) {
   const blue = new THREE.Mesh(blueGeo, blueMat);
 
   const glowSpriteMat = new THREE.SpriteMaterial({
-    color: 0xffb347,
+    map: GLOW_TEX,
+    color: 0xffc15a,
     transparent: true,
-    opacity: 0.36,
+    opacity: 0.55,
+    depthWrite: false,
     blending: THREE.AdditiveBlending
   });
   const glow = new THREE.Sprite(glowSpriteMat);
-  glow.scale.set(0.09 * scale, 0.11 * scale, 1);
+  glow.scale.set(0.085 * scale, 0.105 * scale, 1);
   glow.position.y = 0.018 * scale;
 
   g.add(outer, core, blue, glow);
@@ -276,7 +295,7 @@ function spawnSparks(worldPos) {
     vels.push(new THREE.Vector3((Math.random() - 0.5) * 0.35, 0.25 + Math.random() * 0.45, (Math.random() - 0.5) * 0.35));
   }
   geom.setAttribute('position', new THREE.BufferAttribute(arr, 3));
-  const mat = new THREE.PointsMaterial({ color: 0xffd275, size: 0.018, transparent: true, opacity: 1.0, blending: THREE.AdditiveBlending });
+  const mat = new THREE.PointsMaterial({ map: GLOW_TEX, color: 0xffd87a, size: 0.032, transparent: true, opacity: 1.0, depthWrite: false, blending: THREE.AdditiveBlending });
   const pts = new THREE.Points(geom, mat);
   scene.add(pts);
   sparkBursts.push({ pts, vels, life: 0, maxLife: 0.9 });
@@ -504,8 +523,8 @@ async function initAssets() {
   handFlame.position.copy(handShamashLocalTip);
   handRoot.add(handFlame);
 
-  handRoot.position.set(0.22, -0.24, -0.44);
-  handRoot.rotation.set(0.08, -0.18, 0.04);
+  handRoot.position.set(0.24, -0.17, -0.44);
+  handRoot.rotation.set(0.08, -0.22, 0.04);
   camera.add(handRoot);
 
   // Start VR controller pairing for Pico 2 WebXR
@@ -699,7 +718,7 @@ renderer.setAnimationLoop(() => {
 
   // Animate FPV hand: subtle breathing + reach toward hovered/ignited wick
   if (handRoot && !shamashParked && !renderer.xr.isPresenting) {
-    const restLocal = new THREE.Vector3(0.22 + pointerNDC.x * 0.05, -0.24 + pointerNDC.y * 0.04 + Math.sin(now * 2.1) * 0.005, -0.44);
+    const restLocal = new THREE.Vector3(0.24 + pointerNDC.x * 0.05, -0.17 + pointerNDC.y * 0.04 + Math.sin(now * 2.1) * 0.005, -0.44);
     if (shamashReachAnim) {
       const elapsed = now - shamashReachAnim.start;
       const p = Math.min(1.0, elapsed / shamashReachAnim.duration);
